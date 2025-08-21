@@ -78,15 +78,37 @@ How can I help you with your single send campaigns?`,
             text: `I need help with SendGrid contacts and lists${action ? ` specifically: ${action}` : ""}.
 
 Available contact management tools:
+
+Contact CRUD Operations:
+- list_contacts: List all contacts with pagination
+- get_contact: Get detailed information about a specific contact
+- create_contact: Create new contacts
+- update_contact: Update existing contact information
+- delete_contact: Delete contacts permanently
+- search_contacts: Search for contacts using query conditions
+- search_contacts_by_emails: Search for specific contacts by email addresses
+
+List Management:
 - list_email_lists: View all your email lists
 - create_email_list: Create a new email list
-- list_segments: View segments and their parent list relationships
-- open_segment_creator: Open the web interface to create segments
-- create_contact: Add new contacts (automatically added to global list)
-- create_contact_with_lists: Add contacts to specific lists
-- open_csv_uploader: Upload contacts via CSV file
-- list_custom_fields: View custom field definitions
-- create_custom_field: Create new custom fields (Text, Number, or Date)
+- update_email_list: Update email list properties
+- delete_email_list: Delete an email list
+- create_contact_with_lists: Create contacts and assign to lists
+- remove_contact_from_lists: Remove contacts from a specific list
+
+Segments & Custom Fields:
+- list_segments: View segments with parent relationships
+- open_segment_creator: Open segment creator in browser
+- list_custom_fields: List custom field definitions
+- create_custom_field: Create new custom fields
+- update_custom_field: Update existing custom field definitions
+- delete_custom_field: Delete custom field definitions
+
+Senders & Import:
+- list_senders: List verified sender identities
+- create_sender: Create new sender identity
+- delete_sender: Delete a verified sender identity
+- open_csv_uploader: Open CSV upload interface
 
 Lists are collections of contacts, while segments are filtered subsets of lists based on criteria you define. Custom fields let you store additional contact information beyond email, first name, and last name.
 
@@ -238,6 +260,341 @@ send_mail with personalizations=[{to:[{email:"user@example.com"}], subject:"Hell
 Note: For marketing campaigns, use the single send tools instead of send_mail.
 
 How can I help you with sending emails?`,
+          },
+        },
+      ],
+    }),
+  },
+
+  sendgrid_list_management_help: {
+    config: {
+      title: "SendGrid List Management Help",
+      description: "Get help with managing SendGrid email lists",
+      argsSchema: {
+        operation: z.string().optional().describe("What you want to do with email lists"),
+      },
+    },
+    handler: ({ operation }: { operation?: string }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I need help with SendGrid email list management${operation ? ` specifically: ${operation}` : ""}.
+
+Available list management tools:
+
+Creating & Managing Lists:
+- create_email_list: Create a new email list for organizing contacts
+- list_email_lists: View all your existing email lists
+- update_email_list: Update email list properties (like name)
+- delete_email_list: Delete an email list (this will remove the list but not the contacts)
+
+Managing List Membership:
+- create_contact_with_lists: Create new contacts and add them to specific lists
+- remove_contact_from_lists: Remove contacts from a specific list (contacts remain in your account)
+
+Key concepts:
+- Email lists are collections of contacts used for organizing your audience
+- Contacts can belong to multiple lists simultaneously
+- Deleting a list doesn't delete the contacts themselves
+- Lists are used for targeting in campaigns and automations
+- You can create lists based on different criteria (customers, prospects, etc.)
+
+Best practices:
+- Use descriptive names for your lists (e.g., "Newsletter Subscribers", "VIP Customers")
+- Regularly clean up unused lists to keep your account organized
+- Consider using segments for dynamic filtering rather than static lists
+
+How can I help you with your email list management?`,
+          },
+        },
+      ],
+    }),
+  },
+
+  sendgrid_contact_crud_help: {
+    config: {
+      title: "SendGrid Contact CRUD Help", 
+      description: "Get help with creating, reading, updating, and deleting contacts",
+      argsSchema: {
+        operation: z.string().optional().describe("What contact operation you want to perform"),
+      },
+    },
+    handler: ({ operation }: { operation?: string }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I need help with SendGrid contact CRUD operations${operation ? ` specifically: ${operation}` : ""}.
+
+Available contact CRUD tools:
+
+Creating Contacts:
+- create_contact: Create new contacts (added to global contact list)
+- create_contact_with_lists: Create contacts and assign them to specific lists
+
+Reading Contacts:
+- list_contacts: List all contacts with pagination support
+- get_contact: Get detailed information about a specific contact by ID
+- search_contacts: Search for contacts using query conditions
+- search_contacts_by_emails: Search for specific contacts by their email addresses
+
+Updating Contacts:
+- update_contact: Update existing contact information (email, name, custom fields, etc.)
+
+Deleting Contacts:
+- delete_contact: Delete contacts permanently (removes from all lists)
+- remove_contact_from_lists: Remove contacts from specific lists (keeps contacts in account)
+
+Key concepts:
+- All contacts are stored in a global contact database
+- Contacts can be assigned to multiple lists
+- Custom fields can store additional contact information
+- Contact IDs are unique identifiers for each contact
+- Email addresses must be unique across your account
+
+Tips:
+- Use search_contacts_by_emails for quick lookups by email
+- Update operations require the contact ID
+- Always backup important contact data before bulk deletions
+- Use custom fields for additional contact attributes
+
+How can I help you with contact management?`,
+          },
+        },
+      ],
+    }),
+  },
+
+  sendgrid_sender_management_help: {
+    config: {
+      title: "SendGrid Sender Management Help",
+      description: "Get help with managing SendGrid sender identities",
+      argsSchema: {
+        task: z.string().optional().describe("What you want to do with sender identities"),
+      },
+    },
+    handler: ({ task }: { task?: string }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I need help with SendGrid sender identity management${task ? ` specifically: ${task}` : ""}.
+
+Available sender management tools:
+- list_senders: View all your verified sender identities
+- create_sender: Create a new sender identity
+- delete_sender: Delete a verified sender identity
+
+What are sender identities?
+Sender identities are verified email addresses and associated information (name, physical address) that you can use as the "from" address when sending emails through SendGrid.
+
+Creating a sender identity requires:
+- nickname: A friendly name for this sender
+- from: Object with email and name
+- reply_to: Object with reply-to email and name  
+- address: Physical street address
+- city: City name
+- state: State/province
+- zip: Postal code
+- country: Country name
+
+Important notes:
+- Email domains must be verified before you can send from them
+- Physical address is required for CAN-SPAM compliance
+- You'll receive a verification email that must be confirmed
+- Only verified senders can be used with the send_mail tool
+- Sender identities help establish trust and deliverability
+
+Best practices:
+- Use business email addresses, not personal ones
+- Keep sender information accurate and up-to-date
+- Use recognizable "from" names that recipients will trust
+- Set up proper reply-to addresses for customer responses
+
+How can I help you with sender identity management?`,
+          },
+        },
+      ],
+    }),
+  },
+
+  sendgrid_custom_fields_help: {
+    config: {
+      title: "SendGrid Custom Fields Help",
+      description: "Get help with managing SendGrid custom field definitions",
+      argsSchema: {
+        operation: z.string().optional().describe("What you want to do with custom fields"),
+      },
+    },
+    handler: ({ operation }: { operation?: string }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I need help with SendGrid custom field management${operation ? ` specifically: ${operation}` : ""}.
+
+Available custom field management tools:
+
+Creating & Managing Custom Fields:
+- list_custom_fields: View all your custom field definitions
+- create_custom_field: Create a new custom field (Text, Number, or Date type)
+- update_custom_field: Update an existing custom field definition (change name)
+- delete_custom_field: Delete a custom field definition
+
+What are custom fields?
+Custom fields allow you to store additional contact information beyond the standard fields (email, first_name, last_name). You can create up to 500 custom fields per account.
+
+Available field types:
+- Text: For storing text values (names, descriptions, etc.)
+- Number: For storing numeric values (age, purchase amounts, etc.)
+- Date: For storing date values (birthdays, subscription dates, etc.)
+
+Key concepts:
+- Each custom field has a unique ID and name
+- Field names are case-insensitive and must be unique
+- Custom field names cannot conflict with reserved field names
+- Fields can be used in contact records, segments, and campaigns
+- Deleting a field removes it from all contacts that have that field
+
+Important notes:
+- Save the field ID when creating fields for future updates/deletions
+- You cannot change a field's type after creation
+- Reserved fields (like email, first_name) cannot be deleted
+- Custom field data is lost when a field is deleted
+
+Best practices:
+- Use descriptive names for your custom fields
+- Plan your field structure before creating many contacts
+- Consider using segments for filtering rather than many custom fields
+- Regularly audit and clean up unused custom fields
+
+Example field names:
+- "customer_tier" (Text): "Gold", "Silver", "Bronze"
+- "purchase_count" (Number): 5, 12, 0
+- "last_purchase_date" (Date): "2023-12-15"
+
+How can I help you with custom field management?`,
+          },
+        },
+      ],
+    }),
+  },
+
+  sendgrid_update_list_help: {
+    config: {
+      title: "SendGrid Update Email List Help",
+      description: "Get help with updating, renaming, or modifying SendGrid email lists",
+      argsSchema: {
+        action: z.string().optional().describe("What you want to update about the list"),
+      },
+    },
+    handler: ({ action }: { action?: string }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I need help with updating SendGrid email lists${action ? ` specifically: ${action}` : ""}.
+
+Key tool for updating lists:
+- update_email_list: Update email list properties like the name
+
+To rename or update an email list:
+1. First, get the list ID using list_email_lists to see all your lists
+2. Use update_email_list with the list_id and new name
+
+Example workflow:
+1. Run list_email_lists to find your list
+2. Note the "id" field of the list you want to rename
+3. Use update_email_list with: list_id="your_list_id_here", name="New List Name"
+
+Important notes:
+- You need the exact list ID (not just the name) to update a list
+- Currently, you can only update the list name - other properties aren't editable
+- The list ID remains the same after renaming
+- Contacts in the list are not affected by renaming
+- List updates take effect immediately
+
+Related tools that might be helpful:
+- list_email_lists: View all your lists to find the one you want to update
+- create_email_list: Create a new list if needed
+- delete_email_list: Delete a list if you want to remove it entirely
+
+Need to rename a list? I can help you find the list ID and update it with a new name!`,
+          },
+        },
+      ],
+    }),
+  },
+
+  sendgrid_segment_management_help: {
+    config: {
+      title: "SendGrid Segment Management Help",
+      description: "Get help with managing SendGrid segments - creating, updating, and deleting dynamic contact segments",
+      argsSchema: {
+        operation: z.string().optional().describe("What you want to do with segments"),
+      },
+    },
+    handler: ({ operation }: { operation?: string }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I need help with SendGrid segment management${operation ? ` specifically: ${operation}` : ""}.
+
+Available segment management tools:
+
+Viewing Segments:
+- list_segments: View all your segments with their parent list relationships
+
+Updating Segments:
+- update_segment: Update an existing segment's name or query criteria
+
+Deleting Segments:
+- delete_segment: Delete an existing segment
+
+Creating Segments:
+- open_segment_creator: Open the SendGrid web interface to create new segments
+
+What are segments?
+Segments are dynamic, filtered subsets of your contacts based on criteria you define. Unlike static lists, segments automatically update as contacts meet or no longer meet the specified criteria.
+
+To update a segment:
+1. Use list_segments to find the segment you want to modify
+2. Note the segment ID from the results
+3. Use update_segment with:
+   - segment_id: The ID of the segment to update
+   - name: (optional) New name for the segment
+   - query_dsl: (optional) New query criteria as JSON string
+
+To delete a segment:
+1. Use list_segments to find the segment you want to delete
+2. Use delete_segment with the segment_id
+
+Important notes:
+- Segments update approximately once per hour based on contact changes
+- Deleting a segment doesn't delete the contacts themselves
+- Query DSL must be valid JSON format for segment criteria
+- Segment counts and samples refresh hourly, not immediately
+- You need the exact segment ID (not name) for updates/deletions
+
+Query DSL examples:
+- Email domain filter: {"query_dsl": {"and": [{"field": "email", "value": "@example.com", "operator": "like"}]}}
+- Custom field filter: {"query_dsl": {"and": [{"field": "custom_field_name", "value": "VIP", "operator": "eq"}]}}
+
+Best practices:
+- Use descriptive names for your segments
+- Test query criteria before applying to large contact bases
+- Regular cleanup of unused segments keeps your account organized
+- Consider using segments instead of static lists for dynamic filtering
+
+How can I help you with segment management?`,
           },
         },
       ],

@@ -27,3 +27,15 @@ export interface ToolResult {
     text: string;
   }>;
 }
+
+// Tool metadata for read-only filtering
+export interface ToolMetadata {
+  readonly: boolean;
+}
+
+// Extended tool definition with metadata
+export interface ToolDefinition {
+  config: any;
+  handler: any;
+  metadata: ToolMetadata;
+}

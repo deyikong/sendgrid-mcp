@@ -64,6 +64,67 @@ npm run build
 ./build/index.js
 ```
 
+## MCP Integration
+
+### Claude Desktop
+
+Add this server to your Claude Desktop configuration file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "node",
+      "args": ["/path/to/sendgrid-mcp/build/index.js"],
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+### Other MCP-Compatible AI Agents
+
+For other AI agents that support MCP, use these connection details:
+
+```bash
+# Direct execution
+node /path/to/sendgrid-mcp/build/index.js
+
+# With environment variables
+SENDGRID_API_KEY="SG.your_api_key_here" READ_ONLY="true" node /path/to/sendgrid-mcp/build/index.js
+```
+
+### Cline (VS Code Extension)
+
+Add to your Cline MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "node",
+      "args": ["/path/to/sendgrid-mcp/build/index.js"],
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+**Important Notes:**
+- Replace `/path/to/sendgrid-mcp/` with the actual absolute path to your project
+- Replace `SG.your_api_key_here` with your actual SendGrid API key
+- Restart Claude Desktop or your AI agent after updating the configuration
+- Ensure the server builds successfully with `npm run build` before configuring
+
 ## Environment Variables
 
 | Variable | Required | Description | Default |
@@ -73,6 +134,68 @@ npm run build
 | `MCP_SERVER_VERSION` | ❌ | Server version | `1.0.0` |
 | `LOG_LEVEL` | ❌ | Logging level (debug, info, warn, error) | `info` |
 | `REQUEST_TIMEOUT` | ❌ | API request timeout in milliseconds | `30000` |
+| `READ_ONLY` | ❌ | Enable read-only mode (true/false) | `true` |
+
+## Read-Only Mode
+
+By default, the SendGrid MCP server runs in **read-only mode** (`READ_ONLY=true`) for safety. All tools are registered and available, but mutable operations are blocked at runtime with helpful error messages.
+
+### How Read-Only Mode Works
+
+When `READ_ONLY=true` (default):
+- **All tools are registered** and visible to the AI assistant
+- **Non-mutating operations** work normally (list, get, search, open browser links)
+- **Mutating operations** are blocked with a clear error message: 
+  ```
+  ❌ Operation blocked: Server is running in READ_ONLY mode. Set READ_ONLY=false in your environment to enable write operations.
+  ```
+
+### Read-Only Safe Operations
+
+These operations work normally when `READ_ONLY=true`:
+
+**Contact Operations:**
+- `list_contacts`, `get_contact`, `search_contacts`, `search_contacts_by_emails`
+
+**List Operations:**  
+- `list_email_lists`, `list_segments`
+
+**Field Operations:**
+- `list_custom_fields`
+
+**Sender Operations:**
+- `list_senders`
+
+**Campaign & Automation Operations:**
+- `list_automations`, `list_single_sends`
+- `open_automation_creator`, `open_automation_editor`
+- `open_single_send_creator`, `open_single_send_stats`
+
+**Utility Operations:**
+- `get_scopes`, `open_segment_creator`, `open_csv_uploader`
+
+### Blocked Operations in Read-Only Mode
+
+These operations are blocked when `READ_ONLY=true`:
+- `create_contact`, `update_contact`, `delete_contact`
+- `create_contact_with_lists`, `remove_contact_from_lists`
+- `create_email_list`, `update_email_list`, `delete_email_list`
+- `create_custom_field`, `update_custom_field`, `delete_custom_field`
+- `create_sender`, `delete_sender`
+- `update_segment`, `delete_segment`
+- `send_mail`
+
+### Full Access Mode
+
+To enable **create, update, delete, and send operations**, set `READ_ONLY=false` in your `.env` file:
+
+```bash
+READ_ONLY=false
+```
+
+This will allow all mutating operations to execute normally while maintaining all read operations.
+
+**⚠️ Security Note:** Only disable read-only mode if you need write access and trust the environment where the server is running.
 
 ## Available Tools
 
@@ -87,17 +210,39 @@ npm run build
 - `open_single_send_stats` - View campaign statistics
 
 ### Contact Management
+
+#### Contact CRUD Operations
+- `list_contacts` - List all contacts with pagination
+- `get_contact` - Get detailed information about a specific contact
+- `create_contact` - Create new contacts
+- `update_contact` - Update existing contact information
+- `delete_contact` - Delete contacts permanently
+- `search_contacts` - Search for contacts using query conditions
+- `search_contacts_by_emails` - Search for specific contacts by email addresses
+
+#### List Management
 - `list_email_lists` - List all email lists
 - `create_email_list` - Create a new email list
+- `update_email_list` - Update email list properties
+- `delete_email_list` - Delete an email list
+- `create_contact_with_lists` - Create contacts and assign to lists
+- `remove_contact_from_lists` - Remove contacts from a specific list
+
+#### Segments & Custom Fields
 - `list_segments` - List segments with parent relationships
 - `open_segment_creator` - Open segment creator in browser
-- `create_contact` - Create new contacts
-- `create_contact_with_lists` - Create contacts and assign to lists
-- `open_csv_uploader` - Open CSV upload interface
+- `update_segment` - Update existing segment name or query criteria
+- `delete_segment` - Delete an existing segment
 - `list_custom_fields` - List custom field definitions
 - `create_custom_field` - Create new custom fields
+- `update_custom_field` - Update existing custom field definitions
+- `delete_custom_field` - Delete custom field definitions
+
+#### Senders & Import
 - `list_senders` - List verified sender identities
 - `create_sender` - Create new sender identity
+- `delete_sender` - Delete a verified sender identity
+- `open_csv_uploader` - Open CSV upload interface
 
 ### Mail Sending
 - `send_mail` - Send transactional emails
@@ -116,7 +261,13 @@ npm run build
 
 - `sendgrid_automation_help` - Get help with marketing automations
 - `sendgrid_campaign_help` - Get help with single send campaigns
-- `sendgrid_contacts_help` - Get help with contact management
+- `sendgrid_contacts_help` - Get help with comprehensive contact management
+- `sendgrid_list_management_help` - Get help with email list CRUD operations
+- `sendgrid_update_list_help` - Get help with updating/renaming email lists
+- `sendgrid_contact_crud_help` - Get help with contact create/read/update/delete operations
+- `sendgrid_custom_fields_help` - Get help with custom field definitions management
+- `sendgrid_segment_management_help` - Get help with managing dynamic contact segments
+- `sendgrid_sender_management_help` - Get help with sender identity management
 - `sendgrid_suppressions_help` - Get help with suppression lists
 - `sendgrid_settings_help` - Get help with account settings
 - `sendgrid_mail_send_help` - Get help with sending emails
@@ -163,6 +314,138 @@ npm run build
 }
 ```
 
+### Search for Contacts by Email
+
+```json
+{
+  "tool": "search_contacts_by_emails",
+  "arguments": {
+    "emails": ["john@example.com", "jane@example.com"]
+  }
+}
+```
+
+### Search Contacts with Query Conditions
+
+```json
+{
+  "tool": "search_contacts",
+  "arguments": {
+    "query": "email LIKE '@example.com'",
+    "page_size": 10
+  }
+}
+```
+
+### Update Contact Information
+
+```json
+{
+  "tool": "update_contact",
+  "arguments": {
+    "contacts": [
+      {
+        "id": "contact_id_here",
+        "first_name": "John",
+        "last_name": "Updated"
+      }
+    ]
+  }
+}
+```
+
+### Delete Contacts
+
+```json
+{
+  "tool": "delete_contact",
+  "arguments": {
+    "contact_ids": ["contact_id_1", "contact_id_2"]
+  }
+}
+```
+
+### Remove Contacts from a List
+
+```json
+{
+  "tool": "remove_contact_from_lists",
+  "arguments": {
+    "list_id": "list_id_here",
+    "contact_ids": ["contact_id_1", "contact_id_2"]
+  }
+}
+```
+
+### Delete a Sender Identity
+
+```json
+{
+  "tool": "delete_sender",
+  "arguments": {
+    "sender_id": "sender_id_here"
+  }
+}
+```
+
+### Update an Email List
+
+```json
+{
+  "tool": "update_email_list",
+  "arguments": {
+    "list_id": "list_id_here",
+    "name": "Updated List Name"
+  }
+}
+```
+
+### Delete an Email List
+
+```json
+{
+  "tool": "delete_email_list",
+  "arguments": {
+    "list_id": "list_id_here"
+  }
+}
+```
+
+### Create a Custom Field
+
+```json
+{
+  "tool": "create_custom_field",
+  "arguments": {
+    "name": "customer_tier",
+    "field_type": "Text"
+  }
+}
+```
+
+### Update a Custom Field
+
+```json
+{
+  "tool": "update_custom_field",
+  "arguments": {
+    "field_id": "field_id_here",
+    "name": "customer_level"
+  }
+}
+```
+
+### Delete a Custom Field
+
+```json
+{
+  "tool": "delete_custom_field",
+  "arguments": {
+    "field_id": "field_id_here"
+  }
+}
+```
+
 ### List Email Lists
 
 ```json
@@ -170,6 +453,41 @@ npm run build
   "tool": "list_email_lists",
   "arguments": {
     "page_size": 100
+  }
+}
+```
+
+### Update a Segment
+
+```json
+{
+  "tool": "update_segment",
+  "arguments": {
+    "segment_id": "segment_id_here",
+    "name": "Updated Segment Name"
+  }
+}
+```
+
+### Update Segment Query Criteria
+
+```json
+{
+  "tool": "update_segment",
+  "arguments": {
+    "segment_id": "segment_id_here",
+    "query_dsl": "{\"and\": [{\"field\": \"email\", \"value\": \"@example.com\", \"operator\": \"like\"}]}"
+  }
+}
+```
+
+### Delete a Segment
+
+```json
+{
+  "tool": "delete_segment",
+  "arguments": {
+    "segment_id": "segment_id_here"
   }
 }
 ```

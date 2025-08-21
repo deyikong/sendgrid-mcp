@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { makeRequest } from "../shared/api.js";
 import { EmailAddressSchema, ToolResult } from "../shared/types.js";
+import { checkReadOnlyMode } from "../shared/env.js";
 
 export const mailTools = {
   send_mail: {
@@ -25,6 +26,11 @@ export const mailTools = {
       },
     },
     handler: async (mailData: any): Promise<ToolResult> => {
+      const readOnlyCheck = checkReadOnlyMode();
+      if (readOnlyCheck.blocked) {
+        return { content: [{ type: "text", text: readOnlyCheck.message! }] };
+      }
+      
       const result = await makeRequest("https://api.sendgrid.com/v3/mail/send", {
         method: "POST",
         body: JSON.stringify(mailData),

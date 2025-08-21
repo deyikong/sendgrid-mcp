@@ -18,6 +18,12 @@ const EnvSchema = z.object({
     .refine((val) => val > 0 && val <= 300000, {
       message: "REQUEST_TIMEOUT must be between 1 and 300000 milliseconds",
     }),
+  READ_ONLY: z
+    .string()
+    .optional()
+    .default("true")
+    .transform((val) => val.toLowerCase() === "true")
+    .describe("When true, only allows read-only operations (default: true)"),
 });
 
 export type Environment = z.infer<typeof EnvSchema>;
@@ -69,7 +75,20 @@ export function getSafeEnvInfo(): Record<string, any> {
     serverVersion: env.MCP_SERVER_VERSION,
     logLevel: env.LOG_LEVEL,
     requestTimeout: env.REQUEST_TIMEOUT,
+    readOnly: env.READ_ONLY,
     hasApiKey: !!env.SENDGRID_API_KEY,
     apiKeyValid: isValidSendGridApiKey(env.SENDGRID_API_KEY),
   };
+}
+
+// Helper to check if READ_ONLY mode blocks the operation
+export function checkReadOnlyMode(): { blocked: boolean; message?: string } {
+  const env = getEnv();
+  if (env.READ_ONLY) {
+    return {
+      blocked: true,
+      message: "❌ Operation blocked: Server is running in READ_ONLY mode. Set READ_ONLY=false in your environment to enable write operations."
+    };
+  }
+  return { blocked: false };
 }
