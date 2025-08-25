@@ -1,16 +1,22 @@
 # SendGrid MCP Server
 
-A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing and transactional email operations.
+A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 54 tools covering all aspects of email management and performance analysis.
 
 ## Features
 
 - **Marketing Automations**: Create and manage email automation workflows
-- **Single Send Campaigns**: Manage one-time email campaigns
-- **Contact Management**: Handle email lists, segments, and contacts
-- **Mail Sending**: Send transactional emails via SendGrid
-- **Suppression Lists**: Manage bounces, spam reports, and unsubscribes
-- **Account Settings**: Access account details and configuration
-- **Browser Integration**: Quick links to SendGrid web interface
+- **Single Send Campaigns**: Manage one-time email campaigns with detailed performance tracking
+- **Contact Management**: Complete CRUD operations for contacts with advanced search and bulk operations
+- **Email Statistics & Analytics**: Multi-dimensional performance analysis across browsers, devices, geography, and email providers with 13-month historical data
+- **Dynamic Segment Management**: Create, update, and delete contact segments with complex filtering criteria that automatically refresh
+- **Dynamic Template Management**: Create, manage, and version HTML email templates with Handlebars support for personalization
+- **Custom Fields Management**: Define and manage additional contact data fields for enhanced targeting
+- **Mail Sending**: Send transactional emails via SendGrid with full personalization support  
+- **Sender Identity Management**: Manage verified sender identities with authentication tracking
+- **Suppression Lists**: Manage bounces, spam reports, and unsubscribes for deliverability optimization
+- **Account Settings**: Access account details and configuration management
+- **Browser Integration**: Quick links to SendGrid web interface for visual operations
+- **Read-Only Safety Mode**: Secure operation mode prevents accidental data modification while maintaining full analytics access
 
 ## Quick Start
 
@@ -183,6 +189,9 @@ These operations are blocked when `READ_ONLY=true`:
 - `create_custom_field`, `update_custom_field`, `delete_custom_field`
 - `create_sender`, `delete_sender`
 - `update_segment`, `delete_segment`
+- `create_template`, `update_template`, `delete_template`
+- `create_template_version`, `update_template_version`, `delete_template_version`
+- `create_html_template`
 - `send_mail`
 
 ### Full Access Mode
@@ -205,19 +214,19 @@ This will allow all mutating operations to execute normally while maintaining al
 - `open_automation_editor` - Open specific automation editor
 
 ### Single Send Campaigns
-- `list_single_sends` - List all single send campaigns
-- `open_single_send_creator` - Open campaign creator in browser
-- `open_single_send_stats` - View campaign statistics
+- `list_single_sends` - List all single send campaigns with metadata
+- `open_single_send_creator` - Open campaign creator in browser for visual design
+- `open_single_send_stats` - View detailed campaign performance statistics
 
 ### Contact Management
 
 #### Contact CRUD Operations
-- `list_contacts` - List all contacts with pagination
+- `list_contacts` - List all contacts with pagination and filtering
 - `get_contact` - Get detailed information about a specific contact
-- `create_contact` - Create new contacts
-- `update_contact` - Update existing contact information
-- `delete_contact` - Delete contacts permanently
-- `search_contacts` - Search for contacts using query conditions
+- `create_contact` - Create new contacts with custom fields
+- `update_contact` - Update existing contact information and custom data
+- `delete_contact` - Delete contacts permanently with cleanup
+- `search_contacts` - Search for contacts using advanced query conditions
 - `search_contacts_by_emails` - Search for specific contacts by email addresses
 
 #### List Management
@@ -228,15 +237,15 @@ This will allow all mutating operations to execute normally while maintaining al
 - `create_contact_with_lists` - Create contacts and assign to lists
 - `remove_contact_from_lists` - Remove contacts from a specific list
 
-#### Segments & Custom Fields
-- `list_segments` - List segments with parent relationships
-- `open_segment_creator` - Open segment creator in browser
-- `update_segment` - Update existing segment name or query criteria
-- `delete_segment` - Delete an existing segment
-- `list_custom_fields` - List custom field definitions
-- `create_custom_field` - Create new custom fields
+#### Dynamic Segments & Custom Fields
+- `list_segments` - List dynamic segments with parent relationships and criteria
+- `open_segment_creator` - Open segment creator in browser for visual query building
+- `update_segment` - Update existing segment name or query criteria with real-time refresh
+- `delete_segment` - Delete an existing segment (contacts remain unaffected)
+- `list_custom_fields` - List custom field definitions with data types
+- `create_custom_field` - Create new custom fields (Text, Number, Date types)
 - `update_custom_field` - Update existing custom field definitions
-- `delete_custom_field` - Delete custom field definitions
+- `delete_custom_field` - Delete custom field definitions with data cleanup
 
 #### Senders & Import
 - `list_senders` - List verified sender identities
@@ -244,20 +253,95 @@ This will allow all mutating operations to execute normally while maintaining al
 - `delete_sender` - Delete a verified sender identity
 - `open_csv_uploader` - Open CSV upload interface
 
+### Dynamic Email Templates
+
+#### Template Management
+- `list_templates` - List all dynamic and legacy templates
+- `get_template` - Get details of a specific template including all versions
+- `create_template` - Create a new dynamic template
+- `update_template` - Update template name and settings
+- `delete_template` - Delete a template and all its versions
+
+#### Template Version Management
+- `create_template_version` - Create a new version with HTML content and settings
+- `get_template_version` - Get details of a specific template version  
+- `update_template_version` - Update version content, subject, and settings
+- `delete_template_version` - Delete a specific template version
+
+#### AI-Optimized Tools
+- `create_html_template` - Create complete template with HTML content in one step (perfect for AI agents)
+- `open_template_editor` - Open SendGrid's visual template editor in browser
+
+**Template Features:**
+- Handlebars syntax support for dynamic content ({{variable}}, {{#each}}, {{#if}})
+- Responsive HTML design with CSS inline support
+- Version management (up to 300 versions per template)
+- Test data integration for preview
+- Plain text auto-generation
+
 ### Mail Sending
-- `send_mail` - Send transactional emails
+- `send_mail` - Send transactional emails (supports templates with dynamic_template_data)
 - `get_scopes` - Get available API permission scopes
 
-### Email Statistics
+### Email Statistics & Analytics
+
+#### Global Performance
 - `get_global_stats` - Retrieve overall email performance metrics
 - `get_stats_overview` - Get comprehensive statistics across multiple dimensions
-- `get_stats_by_browser` - Statistics broken down by browser type
-- `get_stats_by_client_type` - Statistics by email client type
-- `get_stats_by_device_type` - Statistics by device type
+
+#### Technology-Based Analytics  
+- `get_stats_by_browser` - Statistics broken down by browser type (Chrome, Firefox, Safari, etc.)
+- `get_stats_by_client_type` - Statistics by email client type (desktop, mobile, webmail)
+- `get_stats_by_device_type` - Statistics by device type (desktop, mobile, tablet)
+- `get_stats_by_mailbox_provider` - Statistics by mailbox provider (Gmail, Outlook, Yahoo, etc.)
+
+#### Geographic & Segmentation Analytics
 - `get_stats_by_country` - Statistics by country and state/province
-- `get_stats_by_mailbox_provider` - Statistics by mailbox provider
-- `get_category_stats` - Statistics for specific email categories
-- `get_subuser_stats` - Statistics for specific subusers
+- `get_category_stats` - Statistics for specific email categories (13-month history)
+- `get_subuser_stats` - Statistics for specific subuser accounts
+
+**Key Metrics Tracked:**
+- Delivery rates, open rates, click-through rates
+- Bounce rates (hard/soft), spam reports, unsubscribes
+- Geographic performance, device preferences
+- Email client compatibility, browser rendering
+- Provider-specific deliverability (Gmail, Outlook, etc.)
+
+## Tools Summary
+
+**Total Tools: 54**
+
+| Category | Tools | Read-Only | Mutable | Description |
+|----------|-------|-----------|---------|-------------|
+| **Marketing Automations** | 3 | 3 | 0 | List automations, open creator/editor |
+| **Single Send Campaigns** | 3 | 3 | 0 | List campaigns, open creator, view stats |
+| **Contact Management** | 8 | 5 | 3 | Full CRUD operations for contacts |
+| **Email List Management** | 4 | 1 | 3 | Create, list, update, delete email lists |
+| **Segment Management** | 4 | 2 | 2 | List, create, update, delete segments |
+| **Custom Fields** | 4 | 1 | 3 | Manage additional contact data fields |
+| **Sender Identities** | 3 | 1 | 2 | Manage verified sender identities |
+| **Contact Operations** | 3 | 0 | 3 | List operations, CSV import utilities |
+| **Dynamic Templates** | 11 | 3 | 8 | Create, manage, and version HTML email templates |
+| **Email Statistics** | 10 | 10 | 0 | Comprehensive analytics and reporting |
+| **Mail Sending** | 1 | 0 | 1 | Send transactional emails |
+| **Utilities** | 1 | 1 | 0 | API scopes and permissions |
+
+### Statistics Tools Breakdown
+
+The 10 statistics tools provide comprehensive email performance analytics:
+
+- **Global Analytics**: Overall performance metrics and multi-dimensional overviews
+- **Technology Analytics**: Browser, email client, and device-specific performance  
+- **Geographic Analytics**: Country and regional performance analysis
+- **Provider Analytics**: Mailbox provider-specific metrics (Gmail, Outlook, Yahoo)
+- **Segmentation Analytics**: Category-based and subuser performance tracking
+
+### Read-Only vs Mutable Operations
+
+- **Read-Only Safe (28 tools)**: Always available, no data modification risk
+- **Mutable Operations (26 tools)**: Blocked when `READ_ONLY=true` for safety
+- **Statistics**: All 10 analytics tools are read-only by design
+- **Templates**: 8 mutable template operations for creation and management
 
 ## Available Resources
 
@@ -284,6 +368,7 @@ This will allow all mutating operations to execute normally while maintaining al
 - `sendgrid_custom_fields_help` - Get help with custom field definitions management
 - `sendgrid_segment_management_help` - Get help with managing dynamic contact segments
 - `sendgrid_sender_management_help` - Get help with sender identity management
+- `sendgrid_templates_help` - Get help with creating and managing dynamic email templates
 - `sendgrid_suppressions_help` - Get help with suppression lists
 - `sendgrid_settings_help` - Get help with account settings
 - `sendgrid_mail_send_help` - Get help with sending emails
@@ -568,6 +653,62 @@ The following are JSON-based tool examples. For natural language examples you ca
 }
 ```
 
+### Create Complete HTML Template (AI-Optimized)
+
+```json
+{
+  "tool": "create_html_template",
+  "arguments": {
+    "template_name": "Welcome Email",
+    "version_name": "Version 1.0",
+    "subject": "Welcome to {{companyName}}, {{firstName}}!",
+    "html_content": "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Welcome</title></head><body style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\"><h1 style=\"color: #333;\">Welcome {{firstName}}!</h1><p>Thank you for joining {{companyName}}. We're excited to have you on board.</p><div style=\"background-color: #f5f5f5; padding: 20px; margin: 20px 0;\"><h2>Getting Started:</h2><ul><li>Complete your profile</li><li>Explore our features</li><li>Contact support if needed</li></ul></div><p>Best regards,<br>The {{companyName}} Team</p></body></html>",
+    "test_data": "{\"firstName\":\"John\",\"companyName\":\"Acme Corp\"}"
+  }
+}
+```
+
+### Create Template Version with HTML Content
+
+```json
+{
+  "tool": "create_template_version",
+  "arguments": {
+    "template_id": "your_template_id",
+    "name": "Newsletter v1.0",
+    "subject": "{{month}} Newsletter - {{companyName}}",
+    "html_content": "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body><h1>{{month}} Newsletter</h1>{{#each articles}}<div><h2>{{title}}</h2><p>{{summary}}</p><a href=\"{{link}}\">Read More</a></div>{{/each}}</body></html>",
+    "test_data": "{\"month\":\"January\",\"companyName\":\"Acme\",\"articles\":[{\"title\":\"Article 1\",\"summary\":\"Summary here\",\"link\":\"https://example.com\"}]}"
+  }
+}
+```
+
+### Send Email Using Template
+
+```json
+{
+  "tool": "send_mail",
+  "arguments": {
+    "personalizations": [
+      {
+        "to": [{"email": "user@example.com", "name": "John Doe"}],
+        "dynamic_template_data": {
+          "firstName": "John",
+          "companyName": "Acme Corp",
+          "orderNumber": "12345",
+          "items": [
+            {"name": "Product A", "price": "29.99"},
+            {"name": "Product B", "price": "19.99"}
+          ]
+        }
+      }
+    ],
+    "from": {"email": "noreply@yourcompany.com", "name": "Your Company"},
+    "template_id": "d-1234567890abcdef1234567890abcdef"
+  }
+}
+```
+
 ## Development
 
 ### Project Structure
@@ -583,9 +724,11 @@ src/
 ├── tools/                      # Tool definitions
 │   ├── automations.ts          # Automation tools
 │   ├── campaigns.ts            # Campaign tools
-│   ├── contacts.ts             # Contact tools
+│   ├── contacts.ts             # Contact tools (33 tools)
 │   ├── mail.ts                 # Mail sending tools
-│   └── misc.ts                 # Miscellaneous tools
+│   ├── misc.ts                 # Miscellaneous tools
+│   ├── stats.ts                # Statistics and analytics tools (10 tools)
+│   └── templates.ts            # Dynamic template management tools (11 tools)
 ├── resources/                  # Resource definitions
 │   └── sendgrid.ts             # SendGrid resources
 └── prompts/                    # Prompt definitions

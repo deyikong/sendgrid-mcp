@@ -1,6 +1,6 @@
 # SendGrid MCP Server - Example Prompts
 
-This document provides extensive examples of prompts you can use with Claude or other AI assistants to interact with the SendGrid MCP Server. These examples demonstrate the full range of capabilities across all 43 tools.
+This document provides extensive examples of prompts you can use with Claude or other AI assistants to interact with the SendGrid MCP Server. These examples demonstrate the full range of capabilities across all 54 tools, including comprehensive dynamic template management.
 
 ## Table of Contents
 
@@ -11,6 +11,7 @@ This document provides extensive examples of prompts you can use with Claude or 
 - [Segment Management](#segment-management)
 - [Custom Fields Management](#custom-fields-management)
 - [Sender Identity Management](#sender-identity-management)
+- [Dynamic Template Management](#dynamic-template-management)
 - [Email Statistics & Analytics](#email-statistics--analytics)
 - [Mail Sending](#mail-sending)
 - [Workflow-Based Examples](#workflow-based-examples)
@@ -195,6 +196,92 @@ This document provides extensive examples of prompts you can use with Claude or 
 
 ---
 
+## Dynamic Template Management
+
+### Template Creation & Management
+- "Create a new welcome email template"
+- "I need to build a professional email template for new subscribers"
+- "Show me all my email templates"
+- "List all the templates in my SendGrid account"
+- "What email templates do I have available?"
+- "Get details for template ID d-12345678"
+- "Show me information about my 'Welcome Series' template"
+
+### AI-Powered Template Creation
+- "Create a welcome email template with HTML that includes the user's first name and company name"
+- "Build a responsive password reset email template with modern styling"
+- "Generate an order confirmation template that shows order items in a loop"
+- "Create a newsletter template with sections for articles and a header"
+- "Design a professional onboarding email with a call-to-action button"
+- "Build a receipt template that dynamically shows purchased items and totals"
+
+### Template Content & HTML
+- "Create an HTML email template for a product launch announcement"
+- "Generate a responsive email template with a hero image and product grid"
+- "Build a professional template with conditional content based on user type"
+- "Create a template with a header, main content area, and footer"
+- "Design an email template that works well on mobile devices"
+- "Generate HTML for a two-column newsletter layout"
+
+### Template Customization
+- "Update my welcome template to include a new company logo"
+- "Change the subject line of template version 12345 to include the user's name"  
+- "Modify the HTML content of my newsletter template"
+- "Update the template to add a new section for customer testimonials"
+- "Change the template colors to match our new brand guidelines"
+
+### Template Versioning
+- "Create a new version of my welcome template with updated content"
+- "I want to A/B test different versions of my newsletter template"
+- "Show me all versions of template d-abcdef123456"
+- "Create version 2.0 of my order confirmation template"
+- "Update version 3 of my welcome series to include new onboarding steps"
+- "Delete the old version of my promotional template"
+
+### Template Testing & Preview
+- "Create a template with test data so I can preview how it looks"
+- "Set up preview data for my order confirmation template"
+- "I want to test my template with sample customer information"
+- "Create test data with a customer name and order items"
+- "Preview my newsletter template with sample articles"
+
+### Template Management Operations
+- "Rename my 'Old Welcome' template to 'Customer Onboarding'"
+- "Delete the outdated promotional template from last year"
+- "Remove version 1.0 of my newsletter template"
+- "Clean up old template versions that are no longer needed"
+- "Set version 2.0 as the active version for my welcome template"
+
+### Template Integration
+- "Open the SendGrid template editor to make visual changes"
+- "I want to edit my template using the drag-and-drop editor"
+- "Launch the visual editor for template d-12345678"
+- "Open the template editor so I can add images and styling"
+
+### Advanced Template Features
+- "Create a template with conditional content that shows different messages for VIP customers"
+- "Build a template that loops through order items and shows each product"
+- "Generate a template with if/else logic based on customer subscription level"
+- "Create a template that personalizes content based on user preferences"
+- "Build a template with dynamic product recommendations"
+
+### Template Content Examples
+- "Create a professional welcome email that says 'Hello [First Name], welcome to [Company Name]'"
+- "Generate a receipt template that shows order number, items, and total amount"
+- "Build a password reset email with a secure link and instructions"
+- "Create a shipping notification with tracking information and delivery details"
+- "Design a monthly newsletter template with featured articles and company news"
+- "Generate an event invitation template with RSVP button and event details"
+
+### Template Workflow Integration
+- "Create a template and then send a test email using it"
+- "Build a welcome template and set it up for use with new subscriber automation"
+- "Generate a template for my abandoned cart email sequence"
+- "Create templates for my entire onboarding email series"
+- "Set up templates for different customer segments (free vs premium)"
+
+---
+
 ## Email Statistics & Analytics
 
 ### Global Performance
@@ -259,6 +346,14 @@ This document provides extensive examples of prompts you can use with Claude or 
 - "Compose an order confirmation email with tracking details"
 - "Send an invoice email to customer@company.com"
 
+### Template-Based Email Sending
+- "Send an email using my welcome template to john@example.com"
+- "Use template d-12345678 to send a personalized email with the customer's name and order details"
+- "Send my newsletter template to all subscribers with this month's articles"
+- "Use the order confirmation template to send a receipt with specific order items"
+- "Send a welcome email using my template with the user's first name and company name"
+- "Use template ID d-abcdef123456 to send personalized onboarding emails to new users"
+
 ---
 
 ## Workflow-Based Examples
@@ -292,6 +387,14 @@ This document provides extensive examples of prompts you can use with Claude or 
 - "Show me statistics for different customer segments"
 - "Track email engagement throughout the customer journey"
 - "Analyze performance for new vs returning customers"
+
+### Template-Driven Workflows
+- "Create a welcome email template and send it to all new subscribers"
+- "Build a complete onboarding email sequence with multiple templates"
+- "Set up templates for abandoned cart recovery emails"
+- "Create and deploy templates for different customer journey stages"
+- "Build a template library for seasonal marketing campaigns"
+- "Generate templates for transactional emails and set up automated sending"
 
 ---
 
@@ -327,6 +430,28 @@ This document provides extensive examples of prompts you can use with Claude or 
 - "Analyze team member performance and campaign effectiveness"
 - "Consolidate reporting across multiple sender identities"
 
+### Advanced Template Management
+- "Create a master template library with consistent branding across all email types"
+- "Build dynamic templates that adapt content based on user behavior data"
+- "Set up A/B testing for template designs and track performance differences"
+- "Create personalized templates that change based on customer segment and purchase history"
+- "Build responsive templates that work perfectly across all email clients"
+- "Generate templates with advanced Handlebars logic for complex business rules"
+
+### Template Performance Optimization
+- "Analyze which email templates have the highest engagement rates"
+- "Compare performance between different template versions"
+- "Optimize template content based on email client compatibility data"
+- "A/B test template subject lines and track open rate improvements"
+- "Monitor template performance across different customer segments"
+
+### Enterprise Template Workflows
+- "Create template approval workflows for marketing teams"
+- "Build template libraries for different product lines or departments"
+- "Set up template versioning for compliance and audit requirements"
+- "Generate templates that integrate with CRM data for personalization"
+- "Create template systems that scale across multiple brands or regions"
+
 ---
 
 ## Tips for Effective Prompts
@@ -351,6 +476,18 @@ This document provides extensive examples of prompts you can use with Claude or 
 - ❌ "Fix my deliverability"
 - ✅ "Analyze my deliverability metrics and suggest improvements based on the data"
 
+### Be Specific About Template Requirements
+- ❌ "Create an email template"
+- ✅ "Create a responsive welcome email template with user's first name, company logo, and a call-to-action button"
+
+### Include Template Content Details
+- ❌ "Make a newsletter template"
+- ✅ "Create a newsletter template with sections for featured articles, company news, and social media links that loops through article data"
+
+### Specify Template Integration Needs
+- ❌ "Create a template and send emails"
+- ✅ "Create an order confirmation template with dynamic product details and then send it to customers with their specific order data"
+
 ---
 
 ## Getting Help
@@ -360,6 +497,9 @@ If you need assistance with any specific functionality, you can ask:
 - "Help me understand SendGrid automation tools"
 - "Explain how to use email statistics effectively"
 - "What are the best practices for contact management?"
+- "Guide me through creating dynamic email templates"
+- "How do I build responsive HTML templates for email?"
+- "What are the best practices for email template design?"
 - "Guide me through setting up a new campaign"
 - "How do I analyze email performance data?"
 

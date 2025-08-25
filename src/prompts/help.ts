@@ -695,4 +695,145 @@ How can I help you analyze your email performance?`,
       ],
     }),
   },
+
+  sendgrid_templates_help: {
+    config: {
+      title: "SendGrid Dynamic Templates Help",
+      description: "Get help with creating, managing, and using SendGrid dynamic email templates with HTML content and Handlebars",
+      argsSchema: {
+        task: z.string().optional().describe("What you want to do with templates"),
+      },
+    },
+    handler: ({ task }: { task?: string }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I need help with SendGrid dynamic templates${task ? ` specifically: ${task}` : ""}.
+
+Available template management tools:
+
+Template Management:
+- list_templates: View all your templates (legacy and dynamic)
+- get_template: Get details of a specific template including all versions
+- create_template: Create a new dynamic template
+- update_template: Update template name
+- delete_template: Delete a template and all its versions
+
+Template Version Management:
+- create_template_version: Create a new version with HTML content and settings
+- get_template_version: Get details of a specific template version
+- update_template_version: Update version content and settings  
+- delete_template_version: Delete a specific version
+
+AI-Friendly Tools:
+- create_html_template: Create complete template with HTML in one step (perfect for AI)
+- open_template_editor: Open SendGrid's visual editor in browser
+
+What are Dynamic Templates?
+Dynamic templates are reusable email templates that support Handlebars syntax for personalization. They're perfect for transactional emails like welcome messages, receipts, password resets, and notifications.
+
+Key Features:
+- Handlebars syntax: {{firstName}}, {{#each items}}, {{#if condition}}
+- Dynamic content replacement at send time
+- HTML and plain text versions
+- Test data for preview
+- Version management (up to 300 versions per template)
+- Visual editor integration
+
+Creating Templates with AI:
+
+1. Simple Approach - Use create_html_template:
+   - Provide: template name, subject, HTML content
+   - Supports Handlebars variables like {{name}}, {{company}}
+   - Creates template and version in one step
+
+2. Advanced Approach - Multi-step:
+   - create_template: Create base template
+   - create_template_version: Add HTML content and settings
+   - Allows for multiple versions and complex configurations
+
+Handlebars Examples:
+- Basic variable: "Hello firstName!"
+- Conditional: "if isPremium then Premium Content"
+- Loops: "each orderItems show name and price" 
+- Helper: "Total with currency formatting"
+
+HTML Template Best Practices:
+- Use responsive design with media queries
+- Include alt text for images
+- Test across email clients
+- Keep CSS inline for best compatibility
+- Use web-safe fonts as fallbacks
+
+Template Structure Example:
+- Use DOCTYPE html for proper rendering
+- Include meta charset and viewport tags
+- Keep max-width around 600px for email clients
+- Use Handlebars syntax: variables, conditionals, and loops
+- Include conditional sections with if blocks  
+- Use loops with each blocks for dynamic content
+- Keep CSS inline for best email client compatibility
+
+Using Templates:
+After creating a template, use it with the send_mail tool:
+- Set template_id to your template ID
+- Include dynamic_template_data with your variables
+- Example: firstName John, companyName Acme Corp
+
+Workflow Examples:
+
+1. Create Welcome Email Template:
+   - Design HTML with firstName and companyName variables
+   - Use create_html_template with the HTML content  
+   - Test with sample data
+
+2. Build Order Confirmation:
+   - Create template with orderNumber and item loops
+   - Include conditional sections for different order types
+   - Set up multiple versions for A/B testing
+
+3. Newsletter Template:
+   - Design responsive layout with article loops
+   - Include unsubscribe links and social media
+   - Create versions for different subscriber segments
+
+Template Management:
+- Templates support up to 300 versions each
+- Only one version can be active at a time
+- Versions can include test data for previewing
+- Use the visual editor for drag-and-drop design
+
+Integration with Other Tools:
+- Use with send_mail for transactional emails
+- Combine with contact segments for targeted campaigns
+- Track performance with email statistics tools
+- Manage sender identities for different templates
+
+Browser Integration:
+- open_template_editor: Launch SendGrid's visual editor
+- Edit templates with drag-and-drop interface  
+- Preview templates with test data
+- Access template gallery for inspiration
+
+Important Notes:
+- Dynamic templates support only Handlebars (not substitution tags)
+- Test data is optional but recommended for preview
+- Plain text versions auto-generate if not provided
+- Active versions are used by default when sending
+
+Common Use Cases:
+- Welcome/onboarding sequences
+- Order confirmations and receipts  
+- Password reset emails
+- Account notifications
+- Marketing newsletters with personalization
+
+How can I help you create and manage your email templates?`,
+          },
+        },
+      ],
+    }),
+  },
 };
