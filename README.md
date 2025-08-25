@@ -248,6 +248,17 @@ This will allow all mutating operations to execute normally while maintaining al
 - `send_mail` - Send transactional emails
 - `get_scopes` - Get available API permission scopes
 
+### Email Statistics
+- `get_global_stats` - Retrieve overall email performance metrics
+- `get_stats_overview` - Get comprehensive statistics across multiple dimensions
+- `get_stats_by_browser` - Statistics broken down by browser type
+- `get_stats_by_client_type` - Statistics by email client type
+- `get_stats_by_device_type` - Statistics by device type
+- `get_stats_by_country` - Statistics by country and state/province
+- `get_stats_by_mailbox_provider` - Statistics by mailbox provider
+- `get_category_stats` - Statistics for specific email categories
+- `get_subuser_stats` - Statistics for specific subusers
+
 ## Available Resources
 
 - `sendgrid://automations` - Marketing automations data
@@ -256,6 +267,11 @@ This will allow all mutating operations to execute normally while maintaining al
 - `sendgrid://contacts` - Contact segments data
 - `sendgrid://suppressions` - Suppression lists (bounces, spam, etc.)
 - `sendgrid://account` - Account profile information
+- `sendgrid://stats` - Global email statistics and performance metrics (30-day overview)
+- `sendgrid://stats/browsers` - Email statistics by browser type (7-day data)
+- `sendgrid://stats/devices` - Email statistics by device type (7-day data)
+- `sendgrid://stats/geography` - Email statistics by geographic location (7-day data)
+- `sendgrid://stats/providers` - Email statistics by mailbox provider (7-day data)
 
 ## Available Prompts
 
@@ -271,8 +287,13 @@ This will allow all mutating operations to execute normally while maintaining al
 - `sendgrid_suppressions_help` - Get help with suppression lists
 - `sendgrid_settings_help` - Get help with account settings
 - `sendgrid_mail_send_help` - Get help with sending emails
+- `sendgrid_stats_help` - Get help with analyzing email performance and statistics
 
 ## Examples
+
+📚 **For extensive examples and natural language prompts, see [EXAMPLE_PROMPTS.md](EXAMPLE_PROMPTS.md)**
+
+The following are JSON-based tool examples. For natural language examples you can use with Claude, check the comprehensive examples file.
 
 ### Send a Simple Email
 
@@ -488,6 +509,61 @@ This will allow all mutating operations to execute normally while maintaining al
   "tool": "delete_segment",
   "arguments": {
     "segment_id": "segment_id_here"
+  }
+}
+```
+
+### Get Global Email Statistics
+
+```json
+{
+  "tool": "get_global_stats",
+  "arguments": {
+    "start_date": "2024-01-01",
+    "end_date": "2024-01-31",
+    "aggregated_by": "day"
+  }
+}
+```
+
+### Get Statistics by Mailbox Provider
+
+```json
+{
+  "tool": "get_stats_by_mailbox_provider",
+  "arguments": {
+    "start_date": "2024-01-01",
+    "end_date": "2024-01-07",
+    "aggregated_by": "day",
+    "mailbox_providers": "gmail.com,outlook.com,yahoo.com"
+  }
+}
+```
+
+### Get Geographic Performance Statistics
+
+```json
+{
+  "tool": "get_stats_by_country",
+  "arguments": {
+    "start_date": "2024-01-01",
+    "end_date": "2024-01-31",
+    "country": "US",
+    "aggregated_by": "week"
+  }
+}
+```
+
+### Get Comprehensive Statistics Overview
+
+```json
+{
+  "tool": "get_stats_overview",
+  "arguments": {
+    "start_date": "2024-01-01",
+    "end_date": "2024-01-07",
+    "aggregated_by": "day",
+    "include_subusers": false
   }
 }
 ```

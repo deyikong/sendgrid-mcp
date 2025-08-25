@@ -600,4 +600,99 @@ How can I help you with segment management?`,
       ],
     }),
   },
+
+  sendgrid_stats_help: {
+    config: {
+      title: "SendGrid Email Statistics Help",
+      description: "Get help with analyzing SendGrid email performance and statistics across multiple dimensions",
+      argsSchema: {
+        metric_type: z.string().optional().describe("What type of statistics you want to analyze"),
+      },
+    },
+    handler: ({ metric_type }: { metric_type?: string }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `I need help with SendGrid email statistics${metric_type ? ` specifically: ${metric_type}` : ""}.
+
+Available statistics tools:
+
+Global Statistics:
+- get_global_stats: Retrieve overall email performance metrics
+- get_stats_overview: Get comprehensive statistics across multiple dimensions
+
+Performance by Technology:
+- get_stats_by_browser: Statistics broken down by browser (Chrome, Firefox, Safari, etc.)
+- get_stats_by_client_type: Statistics by email client type (desktop, mobile, webmail)
+- get_stats_by_device_type: Statistics by device type (desktop, mobile, tablet)
+- get_stats_by_mailbox_provider: Statistics by provider (Gmail, Outlook, Yahoo, etc.)
+
+Geographic Analysis:
+- get_stats_by_country: Statistics broken down by country and state/province
+
+Advanced Segmentation:
+- get_category_stats: Statistics for specific email categories (13 months history)
+- get_subuser_stats: Statistics for specific subusers
+
+Key Parameters:
+- start_date: Required, format YYYY-MM-DD
+- end_date: Optional, defaults to today
+- aggregated_by: day/week/month (default: day)
+
+Common metrics included:
+- delivered: Successfully delivered emails
+- opens: Email open events
+- clicks: Link click events  
+- bounces: Hard and soft bounces
+- spam_reports: Emails marked as spam
+- unsubscribes: Unsubscribe requests
+- blocks: Emails blocked by recipient servers
+
+Example workflows:
+
+1. Weekly Performance Review:
+   - get_global_stats with last 7 days
+   - get_stats_by_mailbox_provider to identify provider issues
+   - get_stats_by_device_type for mobile optimization insights
+
+2. Geographic Campaign Analysis:
+   - get_stats_by_country to see regional performance
+   - Compare engagement rates across different markets
+
+3. Technical Performance Audit:
+   - get_stats_by_browser to identify rendering issues
+   - get_stats_by_client_type for client-specific problems
+
+4. Comprehensive Report:
+   - get_stats_overview for all metrics in one call
+   - Includes global, browser, geographic, and provider breakdowns
+
+Important notes:
+- Category statistics limited to previous 13 months
+- Statistics update regularly but may have slight delays
+- Use date ranges wisely to avoid large data sets
+- Aggregate by week/month for longer time periods
+
+Resources available:
+- sendgrid://stats: 30-day overview with multiple breakdowns
+- sendgrid://stats/browsers: 7-day browser performance
+- sendgrid://stats/devices: 7-day device performance
+- sendgrid://stats/geography: 7-day geographic performance
+- sendgrid://stats/providers: 7-day mailbox provider performance
+
+Best practices:
+- Start with get_global_stats for overall trends
+- Use specific breakdowns to identify issues
+- Compare metrics over time to spot patterns
+- Focus on actionable metrics like open/click rates
+- Monitor bounce rates and spam reports closely
+
+How can I help you analyze your email performance?`,
+          },
+        },
+      ],
+    }),
+  },
 };
