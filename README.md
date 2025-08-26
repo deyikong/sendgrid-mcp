@@ -22,10 +22,19 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 
 ### 1. Installation
 
+#### Option A: Install from npm (Recommended)
+
 ```bash
-git clone <repository-url>
+npm install -g sendgrid-mcp
+```
+
+#### Option B: Install from source
+
+```bash
+git clone https://github.com/your-username/sendgrid-mcp.git
 cd sendgrid-mcp
 npm install
+npm run build
 ```
 
 ### 2. Environment Setup
@@ -60,8 +69,14 @@ LOG_LEVEL=info
 REQUEST_TIMEOUT=30000
 ```
 
-### 5. Build and Run
+### 5. Run the Server
 
+#### If installed via npm:
+```bash
+sendgrid-mcp
+```
+
+#### If installed from source:
 ```bash
 # Build the server
 npm run build
@@ -79,6 +94,22 @@ Add this server to your Claude Desktop configuration file:
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
 **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
 
+#### Using npm package (Recommended):
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+#### Using local build:
 ```json
 {
   "mcpServers": {
@@ -98,6 +129,16 @@ Add this server to your Claude Desktop configuration file:
 
 For other AI agents that support MCP, use these connection details:
 
+#### Using npm package (Recommended):
+```bash
+# Direct execution
+sendgrid-mcp
+
+# With environment variables
+SENDGRID_API_KEY="SG.your_api_key_here" READ_ONLY="true" sendgrid-mcp
+```
+
+#### Using local build:
 ```bash
 # Direct execution
 node /path/to/sendgrid-mcp/build/index.js
@@ -110,6 +151,22 @@ SENDGRID_API_KEY="SG.your_api_key_here" READ_ONLY="true" node /path/to/sendgrid-
 
 Add to your Cline MCP configuration:
 
+#### Using npm package (Recommended):
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+#### Using local build:
 ```json
 {
   "mcpServers": {
@@ -126,10 +183,11 @@ Add to your Cline MCP configuration:
 ```
 
 **Important Notes:**
-- Replace `/path/to/sendgrid-mcp/` with the actual absolute path to your project
+- **npm package**: Ensure you've installed globally with `npm install -g sendgrid-mcp`
+- **Local build**: Replace `/path/to/sendgrid-mcp/` with the actual absolute path to your project
 - Replace `SG.your_api_key_here` with your actual SendGrid API key
 - Restart Claude Desktop or your AI agent after updating the configuration
-- Ensure the server builds successfully with `npm run build` before configuring
+- For local builds, ensure the server builds successfully with `npm run build` before configuring
 
 ## Environment Variables
 
@@ -747,10 +805,61 @@ src/
 npm run build
 ```
 
+### Creating Releases
+
+To publish a new version to npm:
+
+1. **Update version in package.json**:
+   ```bash
+   npm version patch  # or minor, major
+   ```
+
+2. **Push changes and tags**:
+   ```bash
+   git push && git push --tags
+   ```
+
+3. **Create GitHub release**: 
+   - Go to GitHub repository releases page
+   - Click "Create a new release"
+   - Select the version tag
+   - Add release notes
+   - Click "Publish release"
+
+4. **Automatic publishing**: GitHub Actions will automatically publish to npm
+
 ### Scripts
 
 - `npm run build` - Build the TypeScript project
 - `npm start` - Run the built server
+
+## NPM Package
+
+The SendGrid MCP Server is available as an npm package for easy installation and use:
+
+**Package**: [`sendgrid-mcp`](https://www.npmjs.com/package/sendgrid-mcp)
+
+### Installation Options
+
+1. **Global installation (recommended for CLI usage)**:
+   ```bash
+   npm install -g sendgrid-mcp
+   ```
+
+2. **Local installation**:
+   ```bash
+   npm install sendgrid-mcp
+   npx sendgrid-mcp
+   ```
+
+### Publishing Process
+
+The package is automatically published to npm when a new release is created on GitHub:
+
+1. **Automated Publishing**: GitHub Actions workflow publishes to npm on release
+2. **Version Management**: Update version in `package.json` before creating release  
+3. **Release Creation**: Create a new release on GitHub to trigger publication
+4. **Provenance**: All published packages include provenance attestation for security
 
 ## Troubleshooting
 
