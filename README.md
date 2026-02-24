@@ -241,6 +241,7 @@ These operations work normally when `READ_ONLY=true`:
 ### Blocked Operations in Read-Only Mode
 
 These operations are blocked when `READ_ONLY=true`:
+- `update_automation_settings`, `update_automation_step`, `delete_automation`
 - `create_contact`, `update_contact`, `delete_contact`
 - `create_contact_with_lists`, `remove_contact_from_lists`
 - `create_email_list`, `update_email_list`, `delete_email_list`
@@ -267,7 +268,11 @@ This will allow all mutating operations to execute normally while maintaining al
 ## Available Tools
 
 ### Marketing Automations
-- `list_automations` - List all marketing automations
+- `list_automations` - List all marketing automations with metadata
+- `get_automation` - Get detailed information about a specific automation
+- `update_automation_settings` - Update automation-level settings (name, status)
+- `update_automation_step` - Update individual step settings (status, wait time)
+- `delete_automation` - Permanently delete an automation
 - `open_automation_creator` - Open automation creator in browser
 - `open_automation_editor` - Open specific automation editor
 
@@ -367,11 +372,11 @@ This will allow all mutating operations to execute normally while maintaining al
 
 ## Tools Summary
 
-**Total Tools: 54**
+**Total Tools: 59**
 
 | Category | Tools | Read-Only | Mutable | Description |
 |----------|-------|-----------|---------|-------------|
-| **Marketing Automations** | 3 | 3 | 0 | List automations, open creator/editor |
+| **Marketing Automations** | 7 | 3 | 4 | Full automation management with CRUD operations |
 | **Single Send Campaigns** | 3 | 3 | 0 | List campaigns, open creator, view stats |
 | **Contact Management** | 8 | 5 | 3 | Full CRUD operations for contacts |
 | **Email List Management** | 4 | 1 | 3 | Create, list, update, delete email lists |
@@ -397,9 +402,10 @@ The 10 statistics tools provide comprehensive email performance analytics:
 ### Read-Only vs Mutable Operations
 
 - **Read-Only Safe (28 tools)**: Always available, no data modification risk
-- **Mutable Operations (26 tools)**: Blocked when `READ_ONLY=true` for safety
+- **Mutable Operations (31 tools)**: Blocked when `READ_ONLY=true` for safety
 - **Statistics**: All 10 analytics tools are read-only by design
 - **Templates**: 8 mutable template operations for creation and management
+- **Automations**: 4 mutable operations for full automation lifecycle management
 
 ## Available Resources
 
@@ -437,6 +443,67 @@ The 10 statistics tools provide comprehensive email performance analytics:
 📚 **For extensive examples and natural language prompts, see [EXAMPLE_PROMPTS.md](EXAMPLE_PROMPTS.md)**
 
 The following are JSON-based tool examples. For natural language examples you can use with Claude, check the comprehensive examples file.
+
+### Get Automation Details
+
+```json
+{
+  "tool": "get_automation",
+  "arguments": {
+    "automation_id": "automation_id_here"
+  }
+}
+```
+
+### Update Automation Settings (Name, Status)
+
+```json
+{
+  "tool": "update_automation_settings",
+  "arguments": {
+    "automation_id": "automation_id_here",
+    "title": "New Automation Name",
+    "status": "active"
+  }
+}
+```
+
+### Pause an Entire Automation
+
+```json
+{
+  "tool": "update_automation_settings",
+  "arguments": {
+    "automation_id": "automation_id_here",
+    "status": "paused"
+  }
+}
+```
+
+### Update Automation Step (Status, Wait Time)
+
+```json
+{
+  "tool": "update_automation_step",
+  "arguments": {
+    "automation_id": "automation_id_here",
+    "step_id": "step_id_here",
+    "step_status": "active",
+    "wait_time": 1440
+  }
+}
+```
+
+### Delete an Automation
+
+```json
+{
+  "tool": "delete_automation",
+  "arguments": {
+    "automation_id": "automation_id_here"
+  }
+}
+```
 
 ### Send a Simple Email
 

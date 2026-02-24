@@ -15,14 +15,32 @@ export const helpPrompts = {
           role: "user",
           content: {
             type: "text",
-            text: `I need help with SendGrid marketing automations${action ? ` specifically: ${action}` : ""}. 
+            text: `I need help with SendGrid marketing automations${action ? ` specifically: ${action}` : ""}.
 
 Available automation tools:
-- list_automations: View all your marketing automations
+
+Read Operations:
+- list_automations: View all your marketing automations with metadata
+- get_automation: Get detailed information about a specific automation including all steps
+
+Automation-Level Management:
+- update_automation_settings: Update automation name and status (activate/pause entire automation)
+- delete_automation: Permanently delete an automation
+
+Step-Level Management:
+- update_automation_step: Update individual step settings (status, wait time, configurations)
+
+Browser Tools:
 - open_automation_creator: Open the SendGrid web interface to create a new automation
 - open_automation_editor: Open the editor for a specific automation
 
 Automations in SendGrid are powerful tools for creating drip campaigns, welcome series, abandoned cart emails, and other automated email sequences based on triggers and customer behavior.
+
+Key Capabilities:
+- Activate/pause entire automations or individual steps
+- Modify step timing and wait periods
+- Rename automations for better organization
+- Get detailed configuration for analysis
 
 How can I help you with your automations?`,
           },
