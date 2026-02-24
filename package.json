@@ -31,12 +31,12 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dkong/sendgrid-mcp.git"
+    "url": "git+https://github.com/deyikong/sendgrid-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/dkong/sendgrid-mcp/issues"
+    "url": "https://github.com/deyikong/sendgrid-mcp/issues"
   },
-  "homepage": "https://github.com/dkong/sendgrid-mcp#readme",
+  "homepage": "https://github.com/deyikong/sendgrid-mcp#readme",
   "engines": {
     "node": ">=18.0.0"
   },
