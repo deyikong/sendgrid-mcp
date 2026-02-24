@@ -1,6 +1,23 @@
 # SendGrid MCP Server
 
-A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 54 tools covering all aspects of email management and performance analysis.
+A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 59 tools covering all aspects of email management and performance analysis.
+
+## Installation
+
+```bash
+npm install -g sendgrid-mcp
+```
+
+Then configure with your preferred MCP client (see [configuration examples](#mcp-client-configuration) below).
+
+## Supported MCP Clients
+
+✅ **Claude Desktop** - Official desktop app
+✅ **Claude Code** - Official CLI tool
+✅ **Cline** - VS Code extension
+✅ **Zed Editor** - Modern code editor
+✅ **Continue** - VS Code autopilot
+✅ **Any MCP-compatible client**
 
 ## Features
 
@@ -22,79 +39,36 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 
 ### 1. Installation
 
-#### Option A: Install from npm (Recommended)
+Install the SendGrid MCP server globally via npm:
 
 ```bash
 npm install -g sendgrid-mcp
 ```
 
-#### Option B: Install from source
-
-```bash
-git clone https://github.com/your-username/sendgrid-mcp.git
-cd sendgrid-mcp
-npm install
-npm run build
-```
-
-### 2. Environment Setup
-
-```bash
-# Copy the example environment file
-cp .env.example .env
-
-# Edit .env with your SendGrid API key
-nano .env
-```
-
-### 3. Get SendGrid API Key
+### 2. Get Your SendGrid API Key
 
 1. Go to [SendGrid API Keys](https://app.sendgrid.com/settings/api_keys)
 2. Click "Create API Key"
 3. Choose "Full Access" or select specific permissions
 4. Copy the generated key (starts with `SG.`)
 
-### 4. Configure Environment
+### 3. Configure Your MCP Client
 
-Edit `.env` file:
+Add the server to your MCP client configuration (see detailed setup instructions below).
 
-```bash
-# Required: Your SendGrid API key
-SENDGRID_API_KEY=SG.your_actual_api_key_here
+That's it! The server will run automatically when your MCP client starts.
 
-# Optional: Server configuration
-MCP_SERVER_NAME=sendgrid-mcp
-MCP_SERVER_VERSION=1.0.0
-LOG_LEVEL=info
-REQUEST_TIMEOUT=30000
-```
-
-### 5. Run the Server
-
-#### If installed via npm:
-```bash
-sendgrid-mcp
-```
-
-#### If installed from source:
-```bash
-# Build the server
-npm run build
-
-# Run the server
-./build/index.js
-```
-
-## MCP Integration
+## MCP Client Configuration
 
 ### Claude Desktop
 
-Add this server to your Claude Desktop configuration file:
+The official Claude desktop application with native MCP support.
 
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
-**Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
+**Configuration File Locations:**
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
 
-#### Using npm package (Recommended):
+**Configuration:**
 ```json
 {
   "mcpServers": {
@@ -109,13 +83,48 @@ Add this server to your Claude Desktop configuration file:
 }
 ```
 
-#### Using local build:
+**Optional Configuration:**
 ```json
 {
   "mcpServers": {
     "sendgrid": {
-      "command": "node",
-      "args": ["/path/to/sendgrid-mcp/build/index.js"],
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "false",
+        "LOG_LEVEL": "info",
+        "REQUEST_TIMEOUT": "30000"
+      }
+    }
+  }
+}
+```
+
+**After configuration:**
+1. Save the file
+2. Restart Claude Desktop
+3. The SendGrid MCP server will be available in Claude
+
+---
+
+### Claude Code (CLI)
+
+Claude's official command-line interface with MCP support.
+
+**Installation:**
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+**Configuration File Location:**
+- **All platforms**: `~/.claude/config.json`
+
+**Configuration:**
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "sendgrid-mcp",
       "env": {
         "SENDGRID_API_KEY": "SG.your_api_key_here",
         "READ_ONLY": "true"
@@ -125,54 +134,147 @@ Add this server to your Claude Desktop configuration file:
 }
 ```
 
-### Other MCP-Compatible AI Agents
-
-For other AI agents that support MCP, use these connection details:
-
-#### Using npm package (Recommended):
+**Usage:**
 ```bash
-# Direct execution
-sendgrid-mcp
+# Start Claude Code with SendGrid MCP
+claude
 
+# The SendGrid tools will be automatically available
+# Ask Claude: "List my SendGrid automations"
+```
+
+---
+
+### Cline (VS Code Extension)
+
+Popular VS Code extension with MCP support.
+
+**Installation:**
+1. Install the Cline extension from VS Code marketplace
+2. Open Cline settings
+
+**Configuration File:**
+- Open VS Code Settings
+- Search for "Cline: MCP Settings"
+- Edit the MCP configuration JSON
+
+**Configuration:**
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+---
+
+### Zed Editor
+
+Modern code editor with built-in AI and MCP support.
+
+**Configuration File Location:**
+- **macOS/Linux**: `~/.config/zed/settings.json`
+- **Windows**: `%APPDATA%/Zed/settings.json`
+
+**Configuration:**
+```json
+{
+  "context_servers": {
+    "sendgrid-mcp": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+---
+
+### Continue (VS Code Extension)
+
+Open-source autopilot for VS Code with MCP support.
+
+**Configuration File Location:**
+- **All platforms**: `~/.continue/config.json`
+
+**Configuration:**
+```json
+{
+  "experimental": {
+    "modelContextProtocolServers": [
+      {
+        "command": "sendgrid-mcp",
+        "env": {
+          "SENDGRID_API_KEY": "SG.your_api_key_here",
+          "READ_ONLY": "true"
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Generic MCP Client
+
+For any MCP-compatible client not listed above:
+
+**Command Line:**
+```bash
 # With environment variables
 SENDGRID_API_KEY="SG.your_api_key_here" READ_ONLY="true" sendgrid-mcp
 ```
 
-#### Using local build:
-```bash
-# Direct execution
-node /path/to/sendgrid-mcp/build/index.js
-
-# With environment variables
-SENDGRID_API_KEY="SG.your_api_key_here" READ_ONLY="true" node /path/to/sendgrid-mcp/build/index.js
-```
-
-### Cline (VS Code Extension)
-
-Add to your Cline MCP configuration:
-
-#### Using npm package (Recommended):
+**Configuration Template:**
 ```json
 {
-  "mcpServers": {
-    "sendgrid": {
-      "command": "sendgrid-mcp",
-      "env": {
-        "SENDGRID_API_KEY": "SG.your_api_key_here",
-        "READ_ONLY": "true"
-      }
-    }
+  "command": "sendgrid-mcp",
+  "env": {
+    "SENDGRID_API_KEY": "SG.your_api_key_here",
+    "READ_ONLY": "true"
   }
 }
 ```
 
-#### Using local build:
+---
+
+## Building from Source (Advanced)
+
+Only needed if you want to modify the server or contribute to development.
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/sendgrid-mcp.git
+cd sendgrid-mcp
+
+# Install dependencies
+npm install
+
+# Build the server
+npm run build
+
+# Link for local testing
+npm link
+```
+
+**Using Local Build in MCP Clients:**
 ```json
 {
   "mcpServers": {
     "sendgrid": {
       "command": "node",
-      "args": ["/path/to/sendgrid-mcp/build/index.js"],
+      "args": ["/absolute/path/to/sendgrid-mcp/build/index.js"],
       "env": {
         "SENDGRID_API_KEY": "SG.your_api_key_here",
         "READ_ONLY": "true"
@@ -181,13 +283,6 @@ Add to your Cline MCP configuration:
   }
 }
 ```
-
-**Important Notes:**
-- **npm package**: Ensure you've installed globally with `npm install -g sendgrid-mcp`
-- **Local build**: Replace `/path/to/sendgrid-mcp/` with the actual absolute path to your project
-- Replace `SG.your_api_key_here` with your actual SendGrid API key
-- Restart Claude Desktop or your AI agent after updating the configuration
-- For local builds, ensure the server builds successfully with `npm run build` before configuring
 
 ## Environment Variables
 
@@ -834,7 +929,61 @@ The following are JSON-based tool examples. For natural language examples you ca
 }
 ```
 
-## Development
+## NPM Package
+
+The SendGrid MCP Server is distributed as an npm package for easy installation:
+
+**Package**: [`sendgrid-mcp`](https://www.npmjs.com/package/sendgrid-mcp)
+
+### Installation
+
+**Recommended - Global Installation:**
+```bash
+npm install -g sendgrid-mcp
+```
+
+**Alternative - Local Installation:**
+```bash
+npm install sendgrid-mcp
+npx sendgrid-mcp
+```
+
+### Version Updates
+
+To update to the latest version:
+```bash
+npm update -g sendgrid-mcp
+```
+
+## Development & Contributing
+
+This section is for developers who want to contribute to the SendGrid MCP server.
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- SendGrid account with API key
+- Git
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/sendgrid-mcp.git
+cd sendgrid-mcp
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Link for local development
+npm link
+
+# Test the local build
+sendgrid-mcp
+```
 
 ### Project Structure
 
@@ -847,15 +996,15 @@ src/
 │   ├── env.ts                  # Environment validation
 │   └── types.ts                # Shared types
 ├── tools/                      # Tool definitions
-│   ├── automations.ts          # Automation tools
-│   ├── campaigns.ts            # Campaign tools
+│   ├── automations.ts          # Automation tools (7 tools)
+│   ├── campaigns.ts            # Campaign tools (3 tools)
 │   ├── contacts.ts             # Contact tools (33 tools)
-│   ├── mail.ts                 # Mail sending tools
-│   ├── misc.ts                 # Miscellaneous tools
-│   ├── stats.ts                # Statistics and analytics tools (10 tools)
-│   └── templates.ts            # Dynamic template management tools (11 tools)
+│   ├── mail.ts                 # Mail sending tools (2 tools)
+│   ├── misc.ts                 # Miscellaneous tools (1 tool)
+│   ├── stats.ts                # Statistics tools (10 tools)
+│   └── templates.ts            # Template tools (11 tools)
 ├── resources/                  # Resource definitions
-│   └── sendgrid.ts             # SendGrid resources
+│   └── sendgrid.ts             # MCP resources
 └── prompts/                    # Prompt definitions
     └── help.ts                 # Help prompts
 ```
@@ -863,94 +1012,160 @@ src/
 ### Adding New Tools
 
 1. Add tool definition to appropriate file in `src/tools/`
-2. Export from `src/tools/index.ts`
-3. Tool will be automatically registered
+2. Follow the existing pattern with config and handler
+3. Export from `src/tools/index.ts`
+4. Update README.md with new tool documentation
+5. Run `npm run build` to compile
 
-### Building
+### Available Scripts
+
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm start` - Run the compiled server
+- `npm test` - Run tests (if available)
+
+### Testing Your Changes
 
 ```bash
+# Build the project
 npm run build
+
+# Test with environment variables
+SENDGRID_API_KEY="SG.your_key" READ_ONLY="true" node build/index.js
 ```
 
-### Creating Releases
+### Creating a Release
 
-To publish a new version to npm:
+For maintainers only:
 
-1. **Update version in package.json**:
+1. Update version in `package.json`:
    ```bash
    npm version patch  # or minor, major
    ```
 
-2. **Push changes and tags**:
+2. Push changes and tags:
    ```bash
    git push && git push --tags
    ```
 
-3. **Create GitHub release**: 
-   - Go to GitHub repository releases page
-   - Click "Create a new release"
-   - Select the version tag
-   - Add release notes
-   - Click "Publish release"
-
-4. **Automatic publishing**: GitHub Actions will automatically publish to npm
-
-### Scripts
-
-- `npm run build` - Build the TypeScript project
-- `npm start` - Run the built server
-
-## NPM Package
-
-The SendGrid MCP Server is available as an npm package for easy installation and use:
-
-**Package**: [`sendgrid-mcp`](https://www.npmjs.com/package/sendgrid-mcp)
-
-### Installation Options
-
-1. **Global installation (recommended for CLI usage)**:
-   ```bash
-   npm install -g sendgrid-mcp
-   ```
-
-2. **Local installation**:
-   ```bash
-   npm install sendgrid-mcp
-   npx sendgrid-mcp
-   ```
+3. Create GitHub release - this triggers automatic npm publishing via GitHub Actions
 
 ### Publishing Process
 
-The package is automatically published to npm when a new release is created on GitHub:
-
-1. **Automated Publishing**: GitHub Actions workflow publishes to npm on release
-2. **Version Management**: Update version in `package.json` before creating release  
-3. **Release Creation**: Create a new release on GitHub to trigger publication
-4. **Provenance**: All published packages include provenance attestation for security
+- **Automated**: GitHub Actions publishes to npm on release creation
+- **Provenance**: All packages include provenance attestation for security
+- **Versioning**: Follows semantic versioning (semver)
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Invalid API Key**
-   - Ensure your API key starts with `SG.`
-   - Verify the key has necessary permissions
-   - Check for typos in `.env` file
+**1. Server Not Found / Command Not Found**
+```
+Error: sendgrid-mcp: command not found
+```
 
-2. **Environment Validation Errors**
-   - Check all required variables are set
-   - Verify variable names match exactly
-   - Ensure no extra spaces or quotes
+**Solution:**
+- Ensure you installed globally: `npm install -g sendgrid-mcp`
+- Check npm global bin directory is in PATH: `npm config get prefix`
+- Try reinstalling: `npm uninstall -g sendgrid-mcp && npm install -g sendgrid-mcp`
 
-3. **Permission Errors**
-   - Your API key might not have sufficient permissions
-   - Create a new key with "Full Access" or required scopes
+---
+
+**2. Invalid API Key**
+```
+Error: SENDGRID_API_KEY must start with 'SG.'
+```
+
+**Solution:**
+- Ensure your API key starts with `SG.`
+- Verify you copied the complete key from SendGrid
+- Check for extra spaces or quotes in your configuration
+- Generate a new API key at [SendGrid API Keys](https://app.sendgrid.com/settings/api_keys)
+
+---
+
+**3. Permission Errors**
+```
+Error: 403 Forbidden
+```
+
+**Solution:**
+- Your API key may not have sufficient permissions
+- Create a new key with "Full Access" or required scopes
+- Verify the key hasn't been revoked or expired
+
+---
+
+**4. Read-Only Mode Blocking Operations**
+```
+❌ Operation blocked: Server is running in READ_ONLY mode
+```
+
+**Solution:**
+- This is intentional security protection
+- To enable write operations, set `READ_ONLY: "false"` in your MCP client configuration
+- Example:
+  ```json
+  {
+    "env": {
+      "SENDGRID_API_KEY": "SG.your_key",
+      "READ_ONLY": "false"
+    }
+  }
+  ```
+
+---
+
+**5. MCP Client Not Detecting Server**
+
+**Solution:**
+- Verify the configuration file location for your specific client
+- Ensure JSON syntax is valid (no trailing commas, proper quotes)
+- Restart your MCP client after configuration changes
+- Check client logs for specific error messages
+
+---
+
+**6. Connection Timeout**
+```
+Error: Request timeout
+```
+
+**Solution:**
+- Check your internet connection
+- Increase timeout in configuration:
+  ```json
+  {
+    "env": {
+      "REQUEST_TIMEOUT": "60000"
+    }
+  }
+  ```
+- Verify SendGrid API is accessible (not blocked by firewall/proxy)
+
+---
 
 ### Getting Help
 
-- Use the built-in help prompts (e.g., `sendgrid_automation_help`)
-- Check SendGrid's [API documentation](https://docs.sendgrid.com/api-reference)
-- Review the `.env.example` file for configuration reference
+- **Built-in Help**: Use help prompts in your MCP client (e.g., ask Claude: "help with sendgrid automations")
+- **SendGrid API**: [Official API Documentation](https://docs.sendgrid.com/api-reference)
+- **MCP Protocol**: [Model Context Protocol Docs](https://modelcontextprotocol.io/)
+- **Issues**: Report bugs at the [GitHub repository](https://github.com/your-username/sendgrid-mcp/issues)
+
+### Debug Mode
+
+Enable detailed logging by setting the LOG_LEVEL:
+
+```json
+{
+  "env": {
+    "SENDGRID_API_KEY": "SG.your_key",
+    "LOG_LEVEL": "debug"
+  }
+}
+```
+
+This will provide detailed information about API requests and responses.
 
 ## License
 
