@@ -1,21 +1,45 @@
 {
   "name": "sendgrid-mcp",
+  "version": "1.0.1",
+  "description": "Model Context Protocol (MCP) server for SendGrid API v3 - manage email marketing, automations, templates, and analytics",
   "type": "module",
+  "main": "./build/index.js",
   "bin": {
     "sendgrid-mcp": "./build/index.js"
   },
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc && chmod 755 build/index.js"
   },
-  "files": [
-    "build"
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "sendgrid",
+    "email",
+    "email-marketing",
+    "transactional-email",
+    "automation",
+    "claude",
+    "ai",
+    "llm"
   ],
-  "version": "1.0.1",
-  "main": "index.js",
-  "keywords": [],
-  "author": "",
+  "author": "SendGrid MCP Contributors",
   "license": "ISC",
-  "description": "MCP Server for SendGrid API v3 operations",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkong/sendgrid-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dkong/sendgrid-mcp/issues"
+  },
+  "homepage": "https://github.com/dkong/sendgrid-mcp#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.3",
     "zod": "^3.25.76"
