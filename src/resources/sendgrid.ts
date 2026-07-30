@@ -28,7 +28,7 @@ export const sendgridResources = {
       mimeType: "application/json",
     },
     handler: async () => {
-      const singleSends = await makeRequest("https://api.sendgrid.com/v3/marketing/singlesends/search?page_size=50");
+      const singleSends = await makeRequest("https://api.sendgrid.com/v3/marketing/singlesends?page_size=50");
       return {
         contents: [
           {
