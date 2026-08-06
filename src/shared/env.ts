@@ -18,6 +18,39 @@ const EnvSchema = z.object({
     .refine((val) => val > 0 && val <= 300000, {
       message: "REQUEST_TIMEOUT must be between 1 and 300000 milliseconds",
     }),
+  // Transport selection: "stdio" (default, for Claude Desktop / Claude Code)
+  // or "http" (Streamable HTTP, for remote connectors and OpenAI).
+  MCP_TRANSPORT: z.enum(["stdio", "http"]).optional().default("stdio"),
+
+  PORT: z
+    .string()
+    .optional()
+    .default("3000")
+    .transform((val) => parseInt(val, 10))
+    .refine((val) => val > 0 && val < 65536, {
+      message: "PORT must be between 1 and 65535",
+    }),
+
+  MCP_HTTP_HOST: z.string().optional().default("127.0.0.1"),
+
+  // Bearer token required on every HTTP request. Strongly recommended whenever
+  // the server is reachable from anything other than localhost.
+  MCP_AUTH_TOKEN: z.string().optional(),
+
+  // Comma-separated allowlists used for DNS-rebinding protection on HTTP.
+  MCP_ALLOWED_HOSTS: z
+    .string()
+    .optional()
+    .transform((val) =>
+      val ? val.split(",").map((s) => s.trim()).filter(Boolean) : undefined
+    ),
+  MCP_ALLOWED_ORIGINS: z
+    .string()
+    .optional()
+    .transform((val) =>
+      val ? val.split(",").map((s) => s.trim()).filter(Boolean) : undefined
+    ),
+
   READ_ONLY: z
     .string()
     .optional()
@@ -76,6 +109,8 @@ export function getSafeEnvInfo(): Record<string, any> {
     logLevel: env.LOG_LEVEL,
     requestTimeout: env.REQUEST_TIMEOUT,
     readOnly: env.READ_ONLY,
+    transport: env.MCP_TRANSPORT,
+    hasAuthToken: !!env.MCP_AUTH_TOKEN,
     hasApiKey: !!env.SENDGRID_API_KEY,
     apiKeyValid: isValidSendGridApiKey(env.SENDGRID_API_KEY),
   };

@@ -14,6 +14,8 @@ Then configure with your preferred MCP client (see [configuration examples](#mcp
 
 ✅ **Claude Desktop** - Official desktop app
 ✅ **Claude Code** - Official CLI tool
+✅ **Claude custom connectors** - via Streamable HTTP (see [Remote / HTTP mode](#remote--http-mode))
+✅ **OpenAI Responses API / Apps SDK** - via Streamable HTTP
 ✅ **Cline** - VS Code extension
 ✅ **Zed Editor** - Modern code editor
 ✅ **Continue** - VS Code autopilot
@@ -142,6 +144,59 @@ claude
 # The SendGrid tools will be automatically available
 # Ask Claude: "List my SendGrid automations"
 ```
+
+---
+
+### Remote / HTTP mode
+
+By default the server speaks **stdio**, which is what Claude Desktop and Claude Code
+launch as a local subprocess. To connect from a *remote* client — Claude custom
+connectors, or OpenAI's Responses API `mcp` tool / Apps SDK — run it in
+**Streamable HTTP** mode instead:
+
+```bash
+export SENDGRID_API_KEY="SG.your_api_key_here"
+export MCP_TRANSPORT=http
+export PORT=3000
+export MCP_AUTH_TOKEN="$(openssl rand -hex 32)"   # required for remote access
+
+sendgrid-mcp
+```
+
+The MCP endpoint is `POST /mcp`; `GET /health` returns a plain status document
+for load balancers. Requests run **statelessly** — no session id needed — which
+is what hosted clients expect.
+
+**Connecting from OpenAI (Responses API):**
+```json
+{
+  "model": "gpt-5",
+  "tools": [{
+    "type": "mcp",
+    "server_label": "sendgrid",
+    "server_url": "https://your-host.example.com/mcp",
+    "authorization": "YOUR_MCP_AUTH_TOKEN"
+  }],
+  "input": "List my SendGrid automations"
+}
+```
+
+**Connecting from Claude (custom connector):** add `https://your-host.example.com/mcp`
+as a custom connector and supply the same bearer token.
+
+#### Security
+
+The HTTP transport puts your SendGrid account behind a network port. Before exposing it:
+
+- **Always set `MCP_AUTH_TOKEN`.** Every request to `/mcp` must carry
+  `Authorization: Bearer <token>`; requests without it get a `401`. The server
+  logs a warning if you bind to a non-loopback address without a token.
+- **Terminate TLS in front of it.** The server speaks plain HTTP — put it behind
+  a reverse proxy or platform load balancer that handles HTTPS.
+- **Set `MCP_ALLOWED_HOSTS` / `MCP_ALLOWED_ORIGINS`** to enable DNS-rebinding
+  protection, which blocks browser-based attacks against a locally bound server.
+- **Keep `READ_ONLY=true`** unless you specifically need write and send
+  operations. This is the single most effective limit on blast radius.
 
 ---
 
@@ -1150,7 +1205,7 @@ Error: Request timeout
 - **Built-in Help**: Use help prompts in your MCP client (e.g., ask Claude: "help with sendgrid automations")
 - **SendGrid API**: [Official API Documentation](https://docs.sendgrid.com/api-reference)
 - **MCP Protocol**: [Model Context Protocol Docs](https://modelcontextprotocol.io/)
-- **Issues**: Report bugs at the [GitHub repository](https://github.com/your-username/sendgrid-mcp/issues)
+- **Issues**: Report bugs at the [GitHub repository](https://github.com/deyikong/sendgrid-mcp/issues)
 
 ### Debug Mode
 
@@ -1185,3 +1240,7 @@ For issues related to:
 - **SendGrid API**: Check [SendGrid Documentation](https://docs.sendgrid.com/)
 - **MCP Protocol**: Check [Model Context Protocol](https://modelcontextprotocol.io/)
 - **This Server**: Open an issue in this repository
+
+## Feedback
+
+I work at SendGrid and maintain this project. Feedback, bug reports, and feature requests are always welcome — please [open an issue](https://github.com/deyikong/sendgrid-mcp/issues) or start a discussion on the repository.
