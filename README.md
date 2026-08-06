@@ -149,54 +149,123 @@ claude
 
 ### Remote / HTTP mode
 
-By default the server speaks **stdio**, which is what Claude Desktop and Claude Code
-launch as a local subprocess. To connect from a *remote* client — Claude custom
-connectors, or OpenAI's Responses API `mcp` tool / Apps SDK — run it in
-**Streamable HTTP** mode instead:
+By default the server speaks **stdio**, which is what Claude Desktop and Claude
+Code launch as a local subprocess. To connect from a *remote* client — Claude
+custom connectors, or OpenAI's Responses API `mcp` tool / Apps SDK — run it in
+**Streamable HTTP** mode.
+
+The MCP endpoint is `POST /mcp`; `GET /health` returns a status document for
+load balancers. Requests are handled **statelessly** (no session id required),
+which is what hosted clients expect.
+
+#### Quick start (local development)
 
 ```bash
 export SENDGRID_API_KEY="SG.your_api_key_here"
 export MCP_TRANSPORT=http
-export PORT=3000
-export MCP_AUTH_TOKEN="$(openssl rand -hex 32)"   # required for remote access
+export MCP_AUTH_MODE=token
+export MCP_AUTH_TOKEN="$(openssl rand -hex 32)"
 
 sendgrid-mcp
 ```
 
-The MCP endpoint is `POST /mcp`; `GET /health` returns a plain status document
-for load balancers. Requests run **statelessly** — no session id needed — which
-is what hosted clients expect.
+#### Authentication
 
-**Connecting from OpenAI (Responses API):**
+Set `MCP_AUTH_MODE` to one of:
+
+| Mode | Use for | Requires |
+|------|---------|----------|
+| `oauth` | Production / remote clients | `MCP_OAUTH_ISSUER`, `MCP_OAUTH_AUDIENCE` |
+| `token` | Local dev, simple self-hosting | `MCP_AUTH_TOKEN` (16+ chars) |
+| `none` | Loopback development only | — refuses to start on a public bind |
+
+**OAuth mode** makes this server an OAuth 2.1 **resource server**. It does not
+issue or store credentials — it verifies access tokens minted by your existing
+identity provider (Auth0, Okta, Entra ID, Google, Stytch, …) against that
+provider's published JWKS.
+
+```bash
+export MCP_AUTH_MODE=oauth
+export MCP_OAUTH_ISSUER="https://your-tenant.auth0.com"
+export MCP_OAUTH_AUDIENCE="https://mcp.example.com"
+export MCP_OAUTH_REQUIRED_SCOPES="sendgrid:read"
+export MCP_PUBLIC_URL="https://mcp.example.com"
+```
+
+The server publishes [RFC 9728](https://datatracker.ietf.org/doc/html/rfc9728)
+Protected Resource Metadata at `/.well-known/oauth-protected-resource`, so
+clients discover your authorization server automatically: an unauthenticated
+request gets a `401` whose `WWW-Authenticate` header points at that document,
+the client reads it, sends the user to your IdP to log in, and retries with the
+resulting token.
+
+Tokens are rejected (`401`) if expired, wrongly signed, or issued for a
+different issuer or audience; a valid token missing a required scope gets `403`.
+
+#### TLS
+
+Either terminate TLS in-process:
+
+```bash
+export TLS_KEY_FILE=/etc/ssl/private/mcp.key
+export TLS_CERT_FILE=/etc/ssl/certs/mcp.crt
+export TLS_CA_FILE=/etc/ssl/certs/chain.pem   # optional intermediates
+```
+
+…or terminate it at a proxy and tell the server to trust the forwarded headers:
+
+```bash
+export TRUST_PROXY=true
+export MCP_PUBLIC_URL="https://mcp.example.com"
+```
+
+`TRUST_PROXY` is off by default because `X-Forwarded-*` headers are
+client-controlled unless a proxy you control overwrites them. TLS 1.2 is the
+enforced minimum in in-process mode.
+
+#### Connecting clients
+
+**OpenAI (Responses API):**
 ```json
 {
   "model": "gpt-5",
   "tools": [{
     "type": "mcp",
     "server_label": "sendgrid",
-    "server_url": "https://your-host.example.com/mcp",
-    "authorization": "YOUR_MCP_AUTH_TOKEN"
+    "server_url": "https://mcp.example.com/mcp",
+    "authorization": "ACCESS_TOKEN"
   }],
   "input": "List my SendGrid automations"
 }
 ```
 
-**Connecting from Claude (custom connector):** add `https://your-host.example.com/mcp`
-as a custom connector and supply the same bearer token.
+**Claude (custom connector):** add `https://mcp.example.com/mcp` as a custom
+connector. In `oauth` mode Claude walks the discovery flow and prompts the user
+to log in; in `token` mode supply the bearer token directly.
 
 #### Security
 
-The HTTP transport puts your SendGrid account behind a network port. Before exposing it:
+The server refuses to start on misconfigurations that would quietly expose your
+SendGrid account, rather than coming up in a weaker mode than you intended:
 
-- **Always set `MCP_AUTH_TOKEN`.** Every request to `/mcp` must carry
-  `Authorization: Bearer <token>`; requests without it get a `401`. The server
-  logs a warning if you bind to a non-loopback address without a token.
-- **Terminate TLS in front of it.** The server speaks plain HTTP — put it behind
-  a reverse proxy or platform load balancer that handles HTTPS.
+- Binding to a non-loopback address without either TLS or `TRUST_PROXY`
+- `MCP_AUTH_MODE=none` on anything but a loopback bind
+- An `http://` `MCP_PUBLIC_URL` that is not loopback
+- A missing or under-length `MCP_AUTH_TOKEN`, or `oauth` mode without an issuer
+  and audience
+- `TLS_KEY_FILE` and `TLS_CERT_FILE` set only one of the pair
+
+Beyond that:
+
+- **Keep `READ_ONLY=true`** unless you need write and send operations. This is
+  the single most effective limit on blast radius — it is the difference
+  between a leaked token exposing analytics and one sending mail from your
+  domain.
 - **Set `MCP_ALLOWED_HOSTS` / `MCP_ALLOWED_ORIGINS`** to enable DNS-rebinding
-  protection, which blocks browser-based attacks against a locally bound server.
-- **Keep `READ_ONLY=true`** unless you specifically need write and send
-  operations. This is the single most effective limit on blast radius.
+  protection, which matters most for locally bound servers reachable from a
+  browser.
+- **Scope your SendGrid API key** to only the permissions this server needs;
+  the key is the real credential behind every request.
 
 ---
 

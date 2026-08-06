@@ -33,9 +33,54 @@ const EnvSchema = z.object({
 
   MCP_HTTP_HOST: z.string().optional().default("127.0.0.1"),
 
-  // Bearer token required on every HTTP request. Strongly recommended whenever
-  // the server is reachable from anything other than localhost.
+  // Authentication mode for the HTTP transport.
+  //   "oauth" - verify tokens from an external identity provider (recommended)
+  //   "token" - single shared secret in MCP_AUTH_TOKEN
+  //   "none"  - no auth; only permitted on a loopback bind
+  MCP_AUTH_MODE: z.enum(["oauth", "token", "none"]).optional().default("token"),
+
+  // Bearer token required on every HTTP request when MCP_AUTH_MODE=token.
   MCP_AUTH_TOKEN: z.string().optional(),
+
+  // --- MCP_AUTH_MODE=oauth ---
+  // Issuer URL of the authorization server (e.g. https://you.auth0.com).
+  MCP_OAUTH_ISSUER: z.string().url().optional(),
+  // This server's resource identifier; must match the token's `aud` claim.
+  // Defaults to MCP_PUBLIC_URL when unset.
+  MCP_OAUTH_AUDIENCE: z.string().url().optional(),
+  // Override JWKS location. Defaults to <issuer>/.well-known/jwks.json.
+  MCP_OAUTH_JWKS_URI: z.string().url().optional(),
+  // Scopes a token must carry to reach /mcp at all.
+  MCP_OAUTH_REQUIRED_SCOPES: z
+    .string()
+    .optional()
+    .transform((val) =>
+      val ? val.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean) : []
+    ),
+
+  // Externally reachable base URL, used to build OAuth metadata documents and
+  // the resource identifier. Required behind a proxy, where the server cannot
+  // infer its own public origin.
+  MCP_PUBLIC_URL: z
+    .string()
+    .url()
+    .optional()
+    .transform((val) => (val ? val.replace(/\/+$/, "") : undefined)),
+
+  // --- TLS ---
+  // When both are set, the server terminates HTTPS itself.
+  TLS_KEY_FILE: z.string().optional(),
+  TLS_CERT_FILE: z.string().optional(),
+  // Optional CA bundle for intermediate certificate chains.
+  TLS_CA_FILE: z.string().optional(),
+
+  // Trust X-Forwarded-* headers. Enable ONLY when a proxy you control sits in
+  // front, since these headers are client-controlled otherwise.
+  TRUST_PROXY: z
+    .string()
+    .optional()
+    .default("false")
+    .transform((val) => val.toLowerCase() === "true"),
 
   // Comma-separated allowlists used for DNS-rebinding protection on HTTP.
   MCP_ALLOWED_HOSTS: z
@@ -59,7 +104,82 @@ const EnvSchema = z.object({
     .describe("When true, only allows read-only operations (default: true)"),
 });
 
-export type Environment = z.infer<typeof EnvSchema>;
+const LOOPBACK_HOSTS = new Set(["127.0.0.1", "::1", "localhost"]);
+
+/**
+ * Cross-field rules. These only apply to the HTTP transport -- stdio runs as a
+ * local subprocess and has no network surface to secure.
+ *
+ * These are hard errors rather than warnings: a misconfigured auth or TLS
+ * setting silently exposes the SendGrid account behind this server, so the
+ * server refuses to start rather than come up in a weaker mode than intended.
+ */
+const EnvSchemaChecked = EnvSchema.superRefine((env, ctx) => {
+  if (env.MCP_TRANSPORT !== "http") return;
+
+  const isLoopback = LOOPBACK_HOSTS.has(env.MCP_HTTP_HOST);
+  const hasTls = Boolean(env.TLS_KEY_FILE && env.TLS_CERT_FILE);
+
+  const fail = (path: string, message: string) =>
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: [path], message });
+
+  // --- TLS ---
+  if (Boolean(env.TLS_KEY_FILE) !== Boolean(env.TLS_CERT_FILE)) {
+    fail("TLS_KEY_FILE", "TLS_KEY_FILE and TLS_CERT_FILE must be set together");
+  }
+
+  if (!isLoopback && !hasTls && !env.TRUST_PROXY) {
+    fail(
+      "TLS_CERT_FILE",
+      `Refusing to serve plaintext HTTP on non-loopback address ${env.MCP_HTTP_HOST}. ` +
+        "Either set TLS_KEY_FILE/TLS_CERT_FILE, or set TRUST_PROXY=true if a TLS-terminating proxy sits in front."
+    );
+  }
+
+  // --- Public URL ---
+  if (env.MCP_PUBLIC_URL && env.MCP_PUBLIC_URL.startsWith("http://")) {
+    const host = new URL(env.MCP_PUBLIC_URL).hostname;
+    if (!LOOPBACK_HOSTS.has(host)) {
+      fail("MCP_PUBLIC_URL", "MCP_PUBLIC_URL must use https:// (http:// is only allowed for loopback)");
+    }
+  }
+
+  // --- Auth ---
+  switch (env.MCP_AUTH_MODE) {
+    case "oauth": {
+      if (!env.MCP_OAUTH_ISSUER) {
+        fail("MCP_OAUTH_ISSUER", "MCP_OAUTH_ISSUER is required when MCP_AUTH_MODE=oauth");
+      }
+      if (!env.MCP_OAUTH_AUDIENCE && !env.MCP_PUBLIC_URL) {
+        fail(
+          "MCP_OAUTH_AUDIENCE",
+          "Set MCP_OAUTH_AUDIENCE (or MCP_PUBLIC_URL) when MCP_AUTH_MODE=oauth -- it is this server's resource identifier and must match the token audience"
+        );
+      }
+      break;
+    }
+    case "token": {
+      if (!env.MCP_AUTH_TOKEN) {
+        fail("MCP_AUTH_TOKEN", "MCP_AUTH_TOKEN is required when MCP_AUTH_MODE=token");
+      } else if (env.MCP_AUTH_TOKEN.length < 16) {
+        fail("MCP_AUTH_TOKEN", "MCP_AUTH_TOKEN must be at least 16 characters; generate one with: openssl rand -hex 32");
+      }
+      break;
+    }
+    case "none": {
+      if (!isLoopback) {
+        fail(
+          "MCP_AUTH_MODE",
+          `MCP_AUTH_MODE=none is only permitted on a loopback bind, but MCP_HTTP_HOST is ${env.MCP_HTTP_HOST}. ` +
+            "An unauthenticated public endpoint would let anyone send email through your SendGrid account."
+        );
+      }
+      break;
+    }
+  }
+});
+
+export type Environment = z.infer<typeof EnvSchemaChecked>;
 
 let _env: Environment | null = null;
 
@@ -69,7 +189,7 @@ export function validateEnvironment(): Environment {
   }
 
   try {
-    _env = EnvSchema.parse(process.env);
+    _env = EnvSchemaChecked.parse(process.env);
     return _env;
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -110,6 +230,10 @@ export function getSafeEnvInfo(): Record<string, any> {
     requestTimeout: env.REQUEST_TIMEOUT,
     readOnly: env.READ_ONLY,
     transport: env.MCP_TRANSPORT,
+    authMode: env.MCP_AUTH_MODE,
+    oauthIssuer: env.MCP_OAUTH_ISSUER,
+    publicUrl: env.MCP_PUBLIC_URL,
+    tls: Boolean(env.TLS_KEY_FILE && env.TLS_CERT_FILE) ? "in-process" : env.TRUST_PROXY ? "proxy-terminated" : "none",
     hasAuthToken: !!env.MCP_AUTH_TOKEN,
     hasApiKey: !!env.SENDGRID_API_KEY,
     apiKeyValid: isValidSendGridApiKey(env.SENDGRID_API_KEY),
