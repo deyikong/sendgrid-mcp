@@ -67,6 +67,7 @@ How can I help you with your automations?`,
 
 Available single send tools:
 - list_single_sends: View all your single send campaigns
+- get_single_send: Retrieve the content and settings for a specific campaign
 - open_single_send_creator: Open the SendGrid web interface to create a new campaign
 - open_single_send_stats: View statistics for a specific campaign
 
