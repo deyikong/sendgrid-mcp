@@ -2,6 +2,8 @@
 
 A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 59 tools covering all aspects of email management and performance analysis.
 
+> **v1.1.0 — new:** Streamable HTTP transport with OAuth 2.1 (resource server), in-process TLS, and proxy support. Connect this server from Claude custom connectors, the OpenAI Responses API `mcp` tool, or any remote MCP client. See [Remote / HTTP mode](#remote--http-mode) and [RELEASES.md](./RELEASES.md).
+
 ## Installation
 
 ```bash
@@ -64,6 +66,9 @@ That's it! The server will run automatically when your MCP client starts.
 
 ### Claude Desktop
 
+<details>
+<summary>Claude Desktop setup</summary>
+
 The official Claude desktop application with native MCP support.
 
 **Configuration File Locations:**
@@ -109,7 +114,11 @@ The official Claude desktop application with native MCP support.
 
 ---
 
+</details>
 ### Claude Code (CLI)
+
+<details>
+<summary>Claude Code setup</summary>
 
 Claude's official command-line interface with MCP support.
 
@@ -147,7 +156,11 @@ claude
 
 ---
 
+</details>
 ### Remote / HTTP mode
+
+<details>
+<summary>Remote / HTTP mode (production deployment)</summary>
 
 By default the server speaks **stdio**, which is what Claude Desktop and Claude
 Code launch as a local subprocess. To connect from a *remote* client — Claude
@@ -269,7 +282,11 @@ Beyond that:
 
 ---
 
+</details>
 ### Cline (VS Code Extension)
+
+<details>
+<summary>Cline setup</summary>
 
 Popular VS Code extension with MCP support.
 
@@ -299,7 +316,11 @@ Popular VS Code extension with MCP support.
 
 ---
 
+</details>
 ### Zed Editor
+
+<details>
+<summary>Zed setup</summary>
 
 Modern code editor with built-in AI and MCP support.
 
@@ -324,7 +345,11 @@ Modern code editor with built-in AI and MCP support.
 
 ---
 
+</details>
 ### Continue (VS Code Extension)
+
+<details>
+<summary>Continue setup</summary>
 
 Open-source autopilot for VS Code with MCP support.
 
@@ -350,7 +375,11 @@ Open-source autopilot for VS Code with MCP support.
 
 ---
 
+</details>
 ### Generic MCP Client
+
+<details>
+<summary>Generic MCP client setup</summary>
 
 For any MCP-compatible client not listed above:
 
@@ -373,7 +402,11 @@ SENDGRID_API_KEY="SG.your_api_key_here" READ_ONLY="true" sendgrid-mcp
 
 ---
 
+</details>
 ## Building from Source (Advanced)
+
+<details>
+<summary>Building from Source</summary>
 
 Only needed if you want to modify the server or contribute to development.
 
@@ -408,6 +441,7 @@ npm link
 }
 ```
 
+</details>
 ## Environment Variables
 
 | Variable | Required | Description | Default |
@@ -420,6 +454,9 @@ npm link
 | `READ_ONLY` | ❌ | Enable read-only mode (true/false) | `true` |
 
 ## Read-Only Mode
+
+<details>
+<summary>Read-Only Mode</summary>
 
 By default, the SendGrid MCP server runs in **read-only mode** (`READ_ONLY=true`) for safety. All tools are registered and available, but mutable operations are blocked at runtime with helpful error messages.
 
@@ -484,7 +521,11 @@ This will allow all mutating operations to execute normally while maintaining al
 
 **⚠️ Security Note:** Only disable read-only mode if you need write access and trust the environment where the server is running.
 
+</details>
 ## Available Tools
+
+<details>
+<summary>Available Tools reference</summary>
 
 ### Marketing Automations
 - `list_automations` - List all marketing automations with metadata
@@ -589,7 +630,11 @@ This will allow all mutating operations to execute normally while maintaining al
 - Email client compatibility, browser rendering
 - Provider-specific deliverability (Gmail, Outlook, etc.)
 
+</details>
 ## Tools Summary
+
+<details>
+<summary>Tools Summary</summary>
 
 **Total Tools: 59**
 
@@ -1313,3 +1358,5 @@ For issues related to:
 ## Feedback
 
 I work at SendGrid and maintain this project. Feedback, bug reports, and feature requests are always welcome — please [open an issue](https://github.com/deyikong/sendgrid-mcp/issues) or start a discussion on the repository.
+
+</details>
