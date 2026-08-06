@@ -1,6 +1,6 @@
 # SendGrid MCP Server
 
-A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 60 tools covering all aspects of email management and performance analysis.
+A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 58 tools covering all aspects of email management and performance analysis.
 
 ## Installation
 
