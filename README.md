@@ -71,7 +71,7 @@ These variables are set inside your MCP client's configuration (as an `env` bloc
 npm install -g sendgrid-mcp
 ```
 
-This installs the `sendgrid-mcp` command globally, which your MCP client will launch as a subprocess. Requires Node.js 18+.
+This installs the `sendgrid-mcp` command globally, which your MCP client will launch as a subprocess. Requires Node.js 20+.
 
 ### 4. Configure your MCP client
 
@@ -1154,7 +1154,7 @@ This section is for developers who want to modify the server or contribute to de
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 20+ and npm
 - SendGrid account with API key
 - Git
 
