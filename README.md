@@ -1242,6 +1242,10 @@ npm run build
 SENDGRID_API_KEY="SG.your_key" READ_ONLY="true" node build/index.js
 ```
 
+For manually verifying a real client can connect over each HTTP auth mode
+(token, none, TLS, OAuth) rather than just the automated suite, see
+[TESTING.md](TESTING.md).
+
 ### Creating a Release
 
 For maintainers only:
