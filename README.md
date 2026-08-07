@@ -1,6 +1,6 @@
 # SendGrid MCP Server
 
-A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 59 tools covering all aspects of email management and performance analysis.
+A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 58 tools covering all aspects of email management and performance analysis.
 
 > **v1.1.0 — new:** Streamable HTTP transport with OAuth 2.1 (resource server), in-process TLS, and proxy support. Connect this server from Claude custom connectors, the OpenAI Responses API `mcp` tool, or any remote MCP client. See [Remote / HTTP mode](#remote--http-mode) and [RELEASES.md](./RELEASES.md).
 
@@ -538,6 +538,7 @@ This will allow all mutating operations to execute normally while maintaining al
 
 ### Single Send Campaigns
 - `list_single_sends` - List all single send campaigns with metadata
+- `get_single_send` - Retrieve detailed content and settings for a single send campaign
 - `open_single_send_creator` - Open campaign creator in browser for visual design
 - `open_single_send_stats` - View detailed campaign performance statistics
 
@@ -637,11 +638,12 @@ This will allow all mutating operations to execute normally while maintaining al
 <summary>Tools Summary</summary>
 
 **Total Tools: 59**
+**Total Tools: 60**
 
 | Category | Tools | Read-Only | Mutable | Description |
 |----------|-------|-----------|---------|-------------|
 | **Marketing Automations** | 7 | 3 | 4 | Full automation management with CRUD operations |
-| **Single Send Campaigns** | 3 | 3 | 0 | List campaigns, open creator, view stats |
+| **Single Send Campaigns** | 4 | 4 | 0 | List campaigns, retrieve content, open creator, view stats |
 | **Contact Management** | 8 | 5 | 3 | Full CRUD operations for contacts |
 | **Email List Management** | 4 | 1 | 3 | Create, list, update, delete email lists |
 | **Segment Management** | 4 | 2 | 2 | List, create, update, delete segments |
@@ -665,7 +667,7 @@ The 10 statistics tools provide comprehensive email performance analytics:
 
 ### Read-Only vs Mutable Operations
 
-- **Read-Only Safe (28 tools)**: Always available, no data modification risk
+- **Read-Only Safe (29 tools)**: Always available, no data modification risk
 - **Mutable Operations (31 tools)**: Blocked when `READ_ONLY=true` for safety
 - **Statistics**: All 10 analytics tools are read-only by design
 - **Templates**: 8 mutable template operations for creation and management

@@ -9,10 +9,40 @@ export const campaignTools = {
       description: "List all single send campaigns",
       inputSchema: {
         page_size: z.number().optional().default(50).describe("Number of results to return"),
+        page_token: z.string().optional().describe("Pagination token from a previous response"),
       },
     },
-    handler: async ({ page_size }: { page_size: number }): Promise<ToolResult> => {
-      const result = await makeRequest(`https://api.sendgrid.com/v3/marketing/singlesends/search?page_size=${page_size}`);
+    handler: async ({
+      page_size,
+      page_token,
+    }: {
+      page_size: number;
+      page_token?: string;
+    }): Promise<ToolResult> => {
+      const searchParams = new URLSearchParams({ page_size: String(page_size) });
+      if (page_token) {
+        searchParams.set("page_token", page_token);
+      }
+
+      const result = await makeRequest(
+        `https://api.sendgrid.com/v3/marketing/singlesends?${searchParams.toString()}`,
+      );
+      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    },
+  },
+
+  get_single_send: {
+    config: {
+      title: "Get Single Send Campaign",
+      description: "Get detailed content and settings for a single send campaign",
+      inputSchema: {
+        singlesend_id: z.string().min(1).describe("The single send ID to retrieve"),
+      },
+    },
+    handler: async ({ singlesend_id }: { singlesend_id: string }): Promise<ToolResult> => {
+      const result = await makeRequest(
+        `https://api.sendgrid.com/v3/marketing/singlesends/${encodeURIComponent(singlesend_id)}`,
+      );
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     },
   },
