@@ -55,11 +55,23 @@ transport, and adds the security primitives required to do so safely.
 - Bumped `@modelcontextprotocol/sdk` to `^1.30.0` (no source changes required;
   the `McpServer` + `registerTool`/`registerResource`/`registerPrompt` API is
   still current). The server now reports protocol version `2025-06-18`.
-- Restructured the README into a linear, top-to-bottom setup flow (API key →
-  environment variables → install → client configuration), added a
-  categorized "Available Tools" reference with worked examples per category,
-  and added concrete OAuth setup walkthroughs for Auth0, Okta, and Microsoft
-  Entra ID.
+- Restructured the README into a linear, top-to-bottom setup flow (install →
+  API key → client configuration), added a categorized "Available Tools"
+  reference with worked examples per category, and added concrete OAuth setup
+  walkthroughs for Auth0, Okta, and Microsoft Entra ID.
+- **Raised the minimum Node version to 20** (from 18). `jose` v6, used for
+  OAuth JWT verification, requires the global Web Crypto API, which isn't
+  available on Node 18. Node 18 has also been end-of-life since April 2025.
+  This only matters if you're running HTTP/OAuth mode on Node 18; stdio-only
+  usage never reached the affected code path.
+- The `/mcp` route now runs auth (`requireBearerAuth`) **before**
+  `express.json()` body parsing, so an unauthenticated request can no longer
+  trigger a body read. Applied via GitHub Copilot Autofix after a code-scan
+  finding.
+- Added a startup-validation rule: `TRUST_PROXY=true` with
+  `MCP_AUTH_MODE=oauth` now requires `MCP_PUBLIC_URL` to be set, so OAuth
+  discovery URLs are guaranteed externally reachable. Also via Copilot
+  Autofix.
 
 ### Fixed
 
