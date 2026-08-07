@@ -725,6 +725,9 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 - `open_automation_creator` - Open automation creator in browser
 - `open_automation_editor` - Open specific automation editor
 
+<details>
+<summary>Examples</summary>
+
 **Example — get automation details:**
 ```json
 {
@@ -769,12 +772,17 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 }
 ```
 
+</details>
+
 ### Single Send Campaigns
 
 - `list_single_sends` - List all single send campaigns with metadata
 - `get_single_send` - Retrieve detailed content and settings for a single send campaign
 - `open_single_send_creator` - Open campaign creator in browser for visual design
 - `open_single_send_stats` - View detailed campaign performance statistics
+
+<details>
+<summary>Examples</summary>
 
 **Example — get a campaign's content and settings:**
 ```json
@@ -786,6 +794,8 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 }
 ```
 
+</details>
+
 ### Contact CRUD Operations
 
 - `list_contacts` - List all contacts with pagination and filtering
@@ -795,6 +805,9 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 - `delete_contact` - Delete contacts permanently with cleanup
 - `search_contacts` - Search for contacts using advanced query conditions
 - `search_contacts_by_emails` - Search for specific contacts by email addresses
+
+<details>
+<summary>Examples</summary>
 
 **Example — create a new contact:**
 ```json
@@ -859,6 +872,8 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 }
 ```
 
+</details>
+
 ### Email List Management
 
 - `list_email_lists` - List all email lists
@@ -867,6 +882,9 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 - `delete_email_list` - Delete an email list
 - `create_contact_with_lists` - Create contacts and assign to lists
 - `remove_contact_from_lists` - Remove contacts from a specific list
+
+<details>
+<summary>Examples</summary>
 
 **Example — list email lists:**
 ```json
@@ -910,6 +928,8 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 }
 ```
 
+</details>
+
 ### Segments & Custom Fields
 
 - `list_segments` - List dynamic segments with parent relationships and criteria
@@ -920,6 +940,9 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 - `create_custom_field` - Create new custom fields (Text, Number, Date types)
 - `update_custom_field` - Update existing custom field definitions
 - `delete_custom_field` - Delete custom field definitions with data cleanup
+
+<details>
+<summary>Examples</summary>
 
 **Example — rename a segment:**
 ```json
@@ -985,12 +1008,17 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 }
 ```
 
+</details>
+
 ### Senders & Import
 
 - `list_senders` - List verified sender identities
 - `create_sender` - Create new sender identity
 - `delete_sender` - Delete a verified sender identity
 - `open_csv_uploader` - Open CSV upload interface
+
+<details>
+<summary>Examples</summary>
 
 **Example — create a sender identity:**
 ```json
@@ -1019,6 +1047,8 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 }
 ```
 
+</details>
+
 ### Dynamic Templates
 
 - `list_templates` - List all dynamic and legacy templates
@@ -1034,6 +1064,9 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 - `open_template_editor` - Open SendGrid's visual template editor in browser
 
 Templates support Handlebars syntax for dynamic content (`{{variable}}`, `{{#each}}`, `{{#if}}`), responsive HTML with inline CSS, up to 300 versions per template, test-data previews, and automatic plain-text generation.
+
+<details>
+<summary>Examples</summary>
 
 **Example — create a complete template in one step (best for AI agents):**
 ```json
@@ -1063,9 +1096,14 @@ Templates support Handlebars syntax for dynamic content (`{{variable}}`, `{{#eac
 }
 ```
 
+</details>
+
 ### Mail Sending
 
 - `send_mail` - Send transactional emails (supports templates with dynamic template data)
+
+<details>
+<summary>Examples</summary>
 
 **Example — send a simple email:**
 ```json
@@ -1114,6 +1152,8 @@ Templates support Handlebars syntax for dynamic content (`{{variable}}`, `{{#eac
 }
 ```
 
+</details>
+
 ### Email Statistics & Analytics
 
 - `get_global_stats` - Retrieve overall email performance metrics
@@ -1127,6 +1167,9 @@ Templates support Handlebars syntax for dynamic content (`{{variable}}`, `{{#eac
 - `get_subuser_stats` - Statistics for specific subuser accounts
 
 Tracks delivery, open, and click-through rates; bounce rates (hard/soft), spam reports, and unsubscribes; geographic performance and device preferences; email client compatibility and browser rendering; and provider-specific deliverability.
+
+<details>
+<summary>Examples</summary>
 
 **Example — global email statistics:**
 ```json
@@ -1179,6 +1222,8 @@ Tracks delivery, open, and click-through rates; bounce rates (hard/soft), spam r
 }
 ```
 
+</details>
+
 ### Utilities
 
 - `get_scopes` - Get available API permission scopes (no arguments)
@@ -1217,6 +1262,9 @@ Tracks delivery, open, and click-through rates; bounce rates (hard/soft), spam r
 ## Development & Contributing
 
 This section is for developers who want to modify the server or contribute to development.
+
+<details>
+<summary>Development setup, project structure, and contribution guide</summary>
 
 ### Prerequisites
 
@@ -1335,9 +1383,14 @@ For maintainers only:
 - **Versioning**: Follows semantic versioning (semver)
 - **Package**: [`sendgrid-mcp` on npm](https://www.npmjs.com/package/sendgrid-mcp) — update with `npm update -g sendgrid-mcp`
 
+</details>
+
 ## Troubleshooting
 
 ### Common Issues
+
+<details>
+<summary>6 common issues & fixes</summary>
 
 **1. Server Not Found / Command Not Found**
 ```
@@ -1424,6 +1477,8 @@ Error: Request timeout
 - Verify SendGrid API is accessible (not blocked by firewall/proxy)
 
 ---
+
+</details>
 
 ### Getting Help
 
