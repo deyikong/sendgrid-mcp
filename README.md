@@ -357,6 +357,38 @@ The MCP endpoint is `POST /mcp`; `GET /health` returns a status document for
 load balancers. Requests are handled **statelessly** (no session id required),
 which is what hosted clients expect.
 
+`none`/`token`/`oauth` below are not alternate ways to *connect* — they're
+three different locks on the one new door (HTTP). Each sits at a different
+layer, and only one of them (the SendGrid key) is required no matter what:
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ Layer 1 -- Transport: how the client reaches the server          │
+│   stdio (local subprocess, default)   or   HTTP (network)        │
+└──────────────────────────────────────────────────────────────────┘
+                    │
+          HTTP only ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ Layer 2 -- Client auth: who may open a connection at all         │
+│   none  |  token  |  oauth          (MCP_AUTH_MODE, HTTP only)   │
+└──────────────────────────────────────────────────────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ Layer 3 -- Server's own SendGrid credential (always required)    │
+│   SENDGRID_API_KEY -- how the server itself calls SendGrid's API │
+└──────────────────────────────────────────────────────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ Layer 4 -- Tool permissions: what's allowed once connected       │
+│   READ_ONLY=true (default) blocks create/update/delete/send      │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+Layers 3 and 4 apply to **every** transport, including stdio — they're not
+HTTP-specific, they're just easiest to see laid out here.
+
 #### Quick start (local development)
 
 ```bash
@@ -390,6 +422,10 @@ export MCP_OAUTH_AUDIENCE="https://mcp.example.com"
 export MCP_OAUTH_REQUIRED_SCOPES="sendgrid:read"
 export MCP_PUBLIC_URL="https://mcp.example.com"
 ```
+
+`SENDGRID_API_KEY` (Layer 3 above) is still required alongside these — OAuth
+only controls who can reach the server, not what the server uses to talk to
+SendGrid.
 
 The server publishes [RFC 9728](https://datatracker.ietf.org/doc/html/rfc9728)
 Protected Resource Metadata at `/.well-known/oauth-protected-resource`, so
