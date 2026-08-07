@@ -26,14 +26,18 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 ✅ **Claude Code** - Official CLI tool
 ✅ **Claude custom connectors** - via Streamable HTTP (see [Remote / HTTP mode](#remote--http-mode))
 ✅ **OpenAI Responses API / Apps SDK** - via Streamable HTTP
+✅ **MCP Market** - Hosted, one-click deploy, no install required (see [MCP Market](#mcp-market-hosted-no-install-required))
 ✅ **Cline** - VS Code extension
 ✅ **Zed Editor** - Modern code editor
 ✅ **Continue** - VS Code autopilot
+✅ **Codex CLI** - via Streamable HTTP
 ✅ **Any MCP-compatible client**
 
 ## Getting Started
 
 Follow these steps in order — by the end you'll have a working SendGrid API key, your environment configured, the server installed, and your MCP client connected.
+
+**Don't want to install or host the server yourself?** Get your API key in step 1, then skip straight to [MCP Market (Hosted)](#mcp-market-hosted-no-install-required) — it deploys and runs the server for you, so steps 2 and 3 below don't apply.
 
 ### 1. Get your SendGrid API key
 
@@ -71,6 +75,7 @@ This installs the `sendgrid-mcp` command globally, which your MCP client will la
 
 Pick your client below and follow its instructions — each one is self-contained and includes the environment variables from step 2.
 
+- [MCP Market (Hosted)](#mcp-market-hosted-no-install-required) — no install, no local hosting
 - [Claude Desktop](#claude-desktop)
 - [Claude Code (CLI)](#claude-code-cli)
 - [Cline (VS Code Extension)](#cline-vs-code-extension)
@@ -80,6 +85,42 @@ Pick your client below and follow its instructions — each one is self-containe
 - [Remote / HTTP mode](#remote--http-mode) (for Claude custom connectors, OpenAI Responses API, or any hosted client)
 
 ## MCP Client Configuration
+
+### MCP Market (Hosted, No Install Required)
+
+<details>
+<summary>MCP Market setup</summary>
+
+[MCP Market](https://app.mcpmarket.com/deyikong/mcp/sendgrid) deploys and hosts this server for you — nothing to install locally and no environment variables to manage on your machine. You still need a [SendGrid API key](#1-get-your-sendgrid-api-key); MCP Market takes it when you deploy the listing.
+
+**Setup:**
+1. Open the [SendGrid MCP listing on MCP Market](https://app.mcpmarket.com/deyikong/mcp/sendgrid) and sign in.
+2. Deploy the server, providing your SendGrid API key when prompted.
+3. MCP Market gives you a hosted connector URL:
+   ```
+   https://link.mcpmarket.com/deyikong/sendgrid/mcp
+   ```
+4. Connect your client to that URL using whichever of these matches your setup:
+
+**Claude Code (CLI):**
+```bash
+claude mcp add --transport http 'sendgrid' 'https://link.mcpmarket.com/deyikong/sendgrid/mcp'
+```
+
+**Claude Desktop:** add `https://link.mcpmarket.com/deyikong/sendgrid/mcp` as a custom connector (Settings → Connectors → Add custom connector).
+
+**Codex CLI:**
+```bash
+codex mcp add 'sendgrid' --url 'https://link.mcpmarket.com/deyikong/sendgrid/mcp'
+```
+
+**Other clients:** any client that speaks Streamable HTTP MCP can connect using the same URL — see [Remote / HTTP mode](#remote--http-mode) for the underlying protocol details. MCP Market's listing page shows connector instructions for additional clients as well.
+
+MCP Market manages hosting, TLS, and availability for the deployed server; for account, billing, or deployment questions, refer to MCP Market directly rather than this repository.
+
+---
+
+</details>
 
 ### Claude Desktop
 
@@ -357,6 +398,86 @@ resulting token.
 
 Tokens are rejected (`401`) if expired, wrongly signed, or issued for a
 different issuer or audience; a valid token missing a required scope gets `403`.
+
+#### Setting up your identity provider
+
+Whichever provider you use, you're configuring the same three things: an
+**issuer URL**, an **audience** (a stable identifier for this API resource),
+and a **scope** clients will request. A few concrete walkthroughs:
+
+<details>
+<summary>Auth0</summary>
+
+1. Sign in to your [Auth0 Dashboard](https://manage.auth0.com/) and go to
+   **Applications → APIs → Create API**.
+2. Set an **Identifier** — this is your audience, e.g.
+   `https://mcp.example.com`. It doesn't need to resolve to anything; it just
+   needs to be unique.
+3. Under the API's **Permissions** tab, add the scopes your server should
+   require, e.g. `sendgrid:read`, `sendgrid:write`.
+4. Your **Issuer URL** is your tenant domain, shown on the API's *Settings*
+   tab: `https://YOUR_TENANT.auth0.com/`.
+
+```bash
+export MCP_OAUTH_ISSUER="https://YOUR_TENANT.auth0.com/"
+export MCP_OAUTH_AUDIENCE="https://mcp.example.com"
+export MCP_OAUTH_REQUIRED_SCOPES="sendgrid:read"
+```
+
+</details>
+
+<details>
+<summary>Okta</summary>
+
+1. Sign in to the [Okta Admin Console](https://login.okta.com/) and go to
+   **Security → API → Authorization Servers**.
+2. Use the `default` authorization server, or create a new one. Its
+   **Issuer URI**, shown at the top of the server's settings page, looks like
+   `https://{yourOktaDomain}/oauth2/{authServerId}`.
+3. On the same page, the **Audience** field (default `api://default`) is what
+   you'll use for the audience — set it to something specific to this server,
+   e.g. `api://sendgrid-mcp`.
+4. Open the **Scopes** tab and add a scope, e.g. `sendgrid:read`.
+
+```bash
+export MCP_OAUTH_ISSUER="https://YOUR_OKTA_DOMAIN/oauth2/YOUR_AUTH_SERVER_ID"
+export MCP_OAUTH_AUDIENCE="api://sendgrid-mcp"
+export MCP_OAUTH_REQUIRED_SCOPES="sendgrid:read"
+```
+
+</details>
+
+<details>
+<summary>Microsoft Entra ID (Azure AD)</summary>
+
+1. In the [Azure Portal](https://portal.azure.com/), go to
+   **Microsoft Entra ID → App registrations → New registration** to represent
+   this MCP server as a resource.
+2. Open the new app's **Expose an API** page and set the
+   **Application ID URI** — this becomes your audience, e.g.
+   `api://<client-id>`.
+3. On the same page, click **Add a scope** to define one, e.g.
+   `sendgrid.read`.
+4. Your **Issuer URL** is `https://login.microsoftonline.com/{tenant-id}/v2.0`,
+   where `{tenant-id}` is the directory (tenant) ID from the app's
+   **Overview** page.
+
+```bash
+export MCP_OAUTH_ISSUER="https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0"
+export MCP_OAUTH_AUDIENCE="api://YOUR_CLIENT_ID"
+export MCP_OAUTH_REQUIRED_SCOPES="sendgrid.read"
+```
+
+</details>
+
+Other providers (Google Identity Platform, Stytch, …) follow the same shape:
+find the OpenID Connect issuer (usually published at
+`<issuer>/.well-known/openid-configuration`), define an audience/resource
+identifier for this server, and create a scope for it.
+
+Whichever provider you use, also set `MCP_PUBLIC_URL` to the
+externally-reachable URL of your server (e.g. `https://mcp.example.com`) —
+clients use it during OAuth discovery.
 
 #### TLS
 
