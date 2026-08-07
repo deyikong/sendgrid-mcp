@@ -39,6 +39,39 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 
 Follow these steps in order — by the end you'll have a working SendGrid API key, your environment configured, the server installed, and your MCP client connected.
 
+This is the actual request path, whichever client you end up using — some
+launch the server locally over stdio, others reach it over the network via
+Streamable HTTP (MCP Market, Remote/HTTP mode), which adds a choice of
+client auth on top:
+
+```
+                                ┌──────────┐
+                                │  Client  │
+                                └────┬─────┘
+              ┌──────────────────────┴───────────────────┐
+              │                                          │
+           stdio (local subprocess)        HTTP (network)
+              │               auth: none | token | oauth │
+              │                                          │
+              └──────────────────────┬───────────────────┘
+                                     ▼
+                           ┌────────────────────┐
+                           │     MCP Server     │
+                           │    (this repo)     │
+                           └─────────┬──────────┘
+                                     │  SENDGRID_API_KEY
+                                     │  (always required, any transport)
+                                     ▼
+                           ┌────────────────────┐
+                           │    SendGrid API    │
+                           └────────────────────┘
+```
+
+`SENDGRID_API_KEY` is required no matter which path you take. `READ_ONLY=true`
+(the default) is a further gate *inside* the MCP Server box — it blocks
+create/update/delete/send tools once a request is already in, regardless of
+which branch it arrived on.
+
 ### 1. Get your SendGrid API key
 
 1. Go to [SendGrid API Keys](https://app.sendgrid.com/settings/api_keys)
@@ -65,7 +98,7 @@ These variables are set inside your MCP client's configuration (as an `env` bloc
 
 ### 3. Install the server
 
-This follows the same fork as the [diagram in MCP Client Configuration](#mcp-client-configuration): install it **locally** if your client launches it itself, or skip installing anything if you're going **remote**.
+This follows the same fork as the diagram above: install it **locally** if your client launches it itself, or skip installing anything if you're going **remote**.
 
 **Local (stdio)** — for Claude Desktop, Claude Code, Cline, Zed, Continue, or any client that runs the server as a subprocess:
 
@@ -95,38 +128,8 @@ Pick your client below and follow its instructions — each one is self-containe
 
 ## MCP Client Configuration
 
-Pick the section below for your client. This is the actual request path for
-all of them — some launch the server locally over stdio, others reach it
-over the network via Streamable HTTP (MCP Market, Remote/HTTP mode), which
-adds a choice of client auth on top:
-
-```
-                                ┌──────────┐
-                                │  Client  │
-                                └────┬─────┘
-              ┌──────────────────────┴───────────────────┐
-              │                                          │
-           stdio (local subprocess)        HTTP (network)
-              │               auth: none | token | oauth │
-              │                                          │
-              └──────────────────────┬───────────────────┘
-                                     ▼
-                           ┌────────────────────┐
-                           │     MCP Server     │
-                           │    (this repo)     │
-                           └─────────┬──────────┘
-                                     │  SENDGRID_API_KEY
-                                     │  (always required, any transport)
-                                     ▼
-                           ┌────────────────────┐
-                           │    SendGrid API    │
-                           └────────────────────┘
-```
-
-`SENDGRID_API_KEY` is required no matter which path you take. `READ_ONLY=true`
-(the default) is a further gate *inside* the MCP Server box — it blocks
-create/update/delete/send tools once a request is already in, regardless of
-which branch it arrived on.
+Pick the section below for your client — see the [request-flow diagram in
+Getting Started](#getting-started) for how each one reaches the server.
 
 ### MCP Market (Hosted, No Install Required)
 
@@ -439,7 +442,7 @@ which is what hosted clients expect.
 
 `none`/`token`/`oauth` below are not alternate ways to *connect* — they're
 three different locks on the one new door (HTTP), as shown in the
-[diagram above](#mcp-client-configuration).
+[request-flow diagram in Getting Started](#getting-started).
 
 #### Quick start (local development)
 
@@ -475,8 +478,8 @@ export MCP_OAUTH_REQUIRED_SCOPES="sendgrid:read"
 export MCP_PUBLIC_URL="https://mcp.example.com"
 ```
 
-`SENDGRID_API_KEY` (see the diagram above) is still required alongside
-these — OAuth only controls who can reach the server, not what the server
+`SENDGRID_API_KEY` (see the [diagram in Getting Started](#getting-started))
+is still required alongside these — OAuth only controls who can reach the server, not what the server
 uses to talk to SendGrid.
 
 The server publishes [RFC 9728](https://datatracker.ietf.org/doc/html/rfc9728)
