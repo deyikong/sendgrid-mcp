@@ -156,6 +156,12 @@ const EnvSchemaChecked = EnvSchema.superRefine((env, ctx) => {
           "Set MCP_OAUTH_AUDIENCE (or MCP_PUBLIC_URL) when MCP_AUTH_MODE=oauth -- it is this server's resource identifier and must match the token audience"
         );
       }
+      if (env.TRUST_PROXY && !env.MCP_PUBLIC_URL) {
+        fail(
+          "MCP_PUBLIC_URL",
+          "MCP_PUBLIC_URL is required when TRUST_PROXY=true and MCP_AUTH_MODE=oauth so OAuth discovery URLs are externally reachable"
+        );
+      }
       break;
     }
     case "token": {
