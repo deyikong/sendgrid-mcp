@@ -187,7 +187,15 @@ export function validateEnvironment(): Environment {
   if (_env) {
     return _env;
   }
+  return parseFresh();
+}
 
+/**
+ * Parse process.env without consulting the cache. The test harness uses this
+ * to pick up env vars that changed between sequential tests sharing the same
+ * module instance.
+ */
+export function parseFresh(): Environment {
   try {
     _env = EnvSchemaChecked.parse(process.env);
     return _env;
@@ -197,11 +205,11 @@ export function validateEnvironment(): Environment {
         const path = err.path.join(".");
         return `${path}: ${err.message}`;
       });
-      
+
       throw new Error(
         `Environment validation failed:\n${errorMessages.join("\n")}\n\n` +
-        `Please check your .env file and ensure all required variables are set.\n` +
-        `See .env.example for reference.`
+          `Please check your .env file and ensure all required variables are set.\n` +
+          `See .env.example for reference.`
       );
     }
     throw error;

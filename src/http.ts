@@ -7,7 +7,7 @@ import { requireBearerAuth } from "@modelcontextprotocol/sdk/server/auth/middlew
 import type { OAuthTokenVerifier } from "@modelcontextprotocol/sdk/server/auth/provider.js";
 import { createServer } from "./server.js";
 import { ExternalIdpTokenVerifier, StaticTokenVerifier, buildProtectedResourceMetadata } from "./auth.js";
-import { getEnv } from "./shared/env.js";
+import { getEnv, parseFresh } from "./shared/env.js";
 
 const MCP_PATH = "/mcp";
 const RESOURCE_METADATA_PATH = "/.well-known/oauth-protected-resource";
@@ -72,6 +72,8 @@ async function handleMcpRequest(req: Request, res: Response): Promise<void> {
   await server.connect(transport);
   await transport.handleRequest(req, res, req.body);
 }
+
+export { parseFresh };
 
 export function buildApp(): Express {
   const env = getEnv();
