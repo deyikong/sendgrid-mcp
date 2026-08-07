@@ -2,6 +2,8 @@
 
 A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 58 tools covering all aspects of email management and performance analysis.
 
+*Built and maintained by a SendGrid engineer, as an independent project — not an official SendGrid product.*
+
 > **v1.1.0 — new:** Streamable HTTP transport with OAuth 2.1 (resource server), in-process TLS, and proxy support. Connect this server from Claude custom connectors, the OpenAI Responses API `mcp` tool, or any remote MCP client. See [Remote / HTTP mode](#remote--http-mode) and [RELEASES.md](./RELEASES.md).
 
 ## Features
