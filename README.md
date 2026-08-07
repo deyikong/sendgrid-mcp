@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 
 *Built and maintained by a SendGrid engineer, as an independent project — not an official SendGrid product.*
 
-> **v1.1.0 — new:** Streamable HTTP transport with OAuth 2.1 (resource server), in-process TLS, and proxy support. Connect this server from Claude custom connectors, the OpenAI Responses API `mcp` tool, or any remote MCP client. See [Remote / HTTP mode](#remote--http-mode) and [RELEASES.md](./RELEASES.md).
+> **v1.1.0 — new:** Streamable HTTP transport with OAuth 2.1 (resource server), in-process TLS, and proxy support. Connect this server from Claude custom connectors, the OpenAI Responses API `mcp` tool, or any remote MCP client. See [Install the server](#1-install-the-server) and [RELEASES.md](./RELEASES.md).
 
 ## Features
 
@@ -26,9 +26,9 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 
 ✅ **Claude Desktop** - Official desktop app
 ✅ **Claude Code** - Official CLI tool
-✅ **Claude custom connectors** - via Streamable HTTP (see [Remote / HTTP mode](#remote--http-mode))
+✅ **Claude custom connectors** - via Streamable HTTP (see [Install the server](#1-install-the-server))
 ✅ **OpenAI Responses API / Apps SDK** - via Streamable HTTP
-✅ **MCP Market** - Hosted, one-click deploy, no install required (see [MCP Market](#mcp-market-hosted-no-install-required))
+✅ **MCP Market** - Hosted, one-click deploy, no install required (see [Install the server](#1-install-the-server))
 ✅ **Cline** - VS Code extension
 ✅ **Zed Editor** - Modern code editor
 ✅ **Continue** - VS Code autopilot
@@ -37,12 +37,12 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 
 ## Getting Started
 
-Follow these steps in order — by the end you'll have a working SendGrid API key, your environment configured, the server installed, and your MCP client connected.
+Follow these steps in order — by the end you'll have the server installed (or deployed), your SendGrid API key set, and your MCP client connected.
 
 This is the actual request path, whichever client you end up using — some
 launch the server locally over stdio, others reach it over the network via
-Streamable HTTP (MCP Market, Remote/HTTP mode), which adds a choice of
-client auth on top:
+Streamable HTTP (MCP Market, self-hosted), which adds a choice of client
+auth on top:
 
 ```
                                 ┌──────────┐
@@ -70,35 +70,12 @@ client auth on top:
 `SENDGRID_API_KEY` is required no matter which path you take. `READ_ONLY=true`
 (the default) is a further gate *inside* the MCP Server box — it blocks
 create/update/delete/send tools once a request is already in, regardless of
-which branch it arrived on.
+which branch it arrived on. See [Environment Variables](#environment-variables)
+for the full list of what you can configure.
 
-### 1. Get your SendGrid API key
+### 1. Install the server
 
-1. Go to [SendGrid API Keys](https://app.sendgrid.com/settings/api_keys)
-2. Click "Create API Key"
-3. Choose "Full Access" or select specific permissions
-4. Copy the generated key (starts with `SG.`)
-
-### 2. Set your environment variables
-
-The server is configured entirely through environment variables. `SENDGRID_API_KEY` is the only required one — you'll pass the rest to your MCP client in the next steps.
-
-| Variable | Required | Description | Default |
-|----------|----------|-------------|---------|
-| `SENDGRID_API_KEY` | ✅ | Your SendGrid API key (starts with SG.) | - |
-| `READ_ONLY` | ❌ | Enable read-only mode (true/false) | `true` |
-| `MCP_SERVER_NAME` | ❌ | Server name for identification | `sendgrid-mcp` |
-| `MCP_SERVER_VERSION` | ❌ | Server version | `1.0.0` |
-| `LOG_LEVEL` | ❌ | Logging level (debug, info, warn, error) | `info` |
-| `REQUEST_TIMEOUT` | ❌ | API request timeout in milliseconds | `30000` |
-
-**`READ_ONLY` defaults to `true`.** In this mode every tool is registered and visible, but operations that create, update, delete, or send are blocked at runtime with a clear error message — only list/get/search/browser-link tools actually run. This is the safest default while you're getting set up. See [Read-Only Mode](#read-only-mode) for the full breakdown of what's blocked, and set `READ_ONLY=false` once you're ready to allow write and send operations.
-
-These variables are set inside your MCP client's configuration (as an `env` block), which you'll do in step 4 — there's nothing to export or save to a file yet unless you're running the server directly (see [Remote / HTTP mode](#remote--http-mode)).
-
-### 3. Install the server
-
-This follows the same fork as the diagram above: install it **locally** if your client launches it itself, or skip installing anything if you're going **remote**.
+Install it **locally** if your client launches it itself, or go **remote** if it connects over the network instead.
 
 **Local (stdio)** — for Claude Desktop, Claude Code, Cline, Zed, Continue, or any client that runs the server as a subprocess:
 
@@ -108,37 +85,12 @@ npm install -g sendgrid-mcp
 
 This installs the `sendgrid-mcp` command globally, which your MCP client will launch as a subprocess. Requires Node.js 20+.
 
-**Remote (HTTP)** — nothing to install locally; the server runs elsewhere and your client just connects to a URL:
-
-- **[MCP Market](#mcp-market-hosted-no-install-required)** — hosts and runs the server for you.
-- **Self-hosted** — you run it yourself with `MCP_TRANSPORT=http`; see [Remote / HTTP mode](#remote--http-mode).
-
-### 4. Configure your MCP client
-
-Pick your client below and follow its instructions — each one is self-contained and includes the environment variables from step 2.
-
-- [MCP Market (Hosted)](#mcp-market-hosted-no-install-required) — no install, no local hosting
-- [Claude Desktop](#claude-desktop)
-- [Claude Code (CLI)](#claude-code-cli)
-- [Cline (VS Code Extension)](#cline-vs-code-extension)
-- [Zed Editor](#zed-editor)
-- [Continue (VS Code Extension)](#continue-vs-code-extension)
-- [Generic MCP Client](#generic-mcp-client)
-- [Remote / HTTP mode](#remote--http-mode) (for Claude custom connectors, OpenAI Responses API, or any hosted client)
-
-## MCP Client Configuration
-
-Pick the section below for your client — see the [request-flow diagram in
-Getting Started](#getting-started) for how each one reaches the server.
-
-### MCP Market (Hosted, No Install Required)
+**Remote (HTTP)** — nothing to install locally; pick one:
 
 <details>
-<summary>MCP Market setup</summary>
+<summary>MCP Market (hosted, no install required)</summary>
 
-[MCP Market](https://app.mcpmarket.com/deyikong/mcp/sendgrid) deploys and hosts this server for you — nothing to install locally and no environment variables to manage on your machine. You still need a [SendGrid API key](#1-get-your-sendgrid-api-key); you'll enter it into MCP Market instead of your own shell/config.
-
-**1. Deploy the server**
+[MCP Market](https://app.mcpmarket.com/deyikong/mcp/sendgrid) deploys and hosts this server for you — nothing to install locally and no environment variables to manage on your machine. You still need a [SendGrid API key](#2-get-your-sendgrid-api-key); you'll enter it into MCP Market instead of your own shell/config.
 
 From MCP Market's **MCP Servers** page, deploy a custom MCP from either source:
 
@@ -152,289 +104,20 @@ From MCP Market's **MCP Servers** page, deploy a custom MCP from either source:
 ![Deploying from an npm package](docs/images/mcp-market/npm-install.png)
 
 Either way, MCP Market builds and runs it for you; it shows up under
-**MCP Servers** with a `Running` status once ready.
-
-**2. Set your environment variables**
-
-Open your deployed server → the **Variables** tab → **My Credentials**, and
-fill in:
-
-![MCP Market Variables tab showing SENDGRID_API_KEY and other credentials](docs/images/mcp-market/set-env-vars.png)
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `SENDGRID_API_KEY` | ✅ | Your SendGrid API key (starts with SG.) |
-| `MCP_SERVER_NAME` | ❌ | Server name for identification |
-| `MCP_SERVER_VERSION` | ❌ | Server version |
-| `LOG_LEVEL` | ❌ | Logging level (debug, info, warn, error) |
-| `REQUEST_TIMEOUT` | ❌ | API request timeout in milliseconds |
-| `READ_ONLY` | ❌ | Enable read-only mode (true/false) |
-
-Each field saves independently — only `SENDGRID_API_KEY` is required.
-
-**3. Connect a client**
-
-Click **+ Connect** on your server's page. MCP Market shows one-click
-install options for Claude Desktop, Claude Code, Codex CLI, Cursor, VS Code,
-Windsurf, Cline, JetBrains, Gemini CLI, Amazon Q, Goose, and Continue — pick
-yours and follow its prompt.
-
-![MCP Market's Install server panel with one-click client options](docs/images/mcp-market/connect-client.png)
-
-For any other client, use the **Connection URL** option instead, which gives
-you a Streamable HTTP endpoint unique to your deployment. The examples below
-use `deyikong/sendgrid-mcp` for illustration — yours will have your own
-username and server name:
-
-```
-https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
-```
-
-Wire it up the same way as any other [Remote / HTTP mode](#remote--http-mode)
-endpoint, e.g.:
-
-```bash
-# Claude Code
-claude mcp add --transport http sendgrid https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
-
-# Codex CLI
-codex mcp add sendgrid --url https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
-```
-
-MCP Market manages hosting, TLS, and availability for the deployed server; for account, billing, or deployment questions, refer to MCP Market directly rather than this repository.
+**MCP Servers** with a `Running` status once ready. Continue to
+[Configure your MCP client](#3-configure-your-mcp-client) to set your
+credentials and connect.
 
 ---
 
 </details>
 
-### Claude Desktop
-
 <details>
-<summary>Claude Desktop setup</summary>
+<summary>Self-hosted (Streamable HTTP)</summary>
 
-The official Claude desktop application with native MCP support.
-
-**Configuration File Locations:**
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
-
-**Configuration:**
-```json
-{
-  "mcpServers": {
-    "sendgrid": {
-      "command": "sendgrid-mcp",
-      "env": {
-        "SENDGRID_API_KEY": "SG.your_api_key_here",
-        "READ_ONLY": "true"
-      }
-    }
-  }
-}
-```
-
-**Optional Configuration:**
-```json
-{
-  "mcpServers": {
-    "sendgrid": {
-      "command": "sendgrid-mcp",
-      "env": {
-        "SENDGRID_API_KEY": "SG.your_api_key_here",
-        "READ_ONLY": "false",
-        "LOG_LEVEL": "info",
-        "REQUEST_TIMEOUT": "30000"
-      }
-    }
-  }
-}
-```
-
-**After configuration:**
-1. Save the file
-2. Restart Claude Desktop
-3. The SendGrid MCP server will be available in Claude
-
----
-
-</details>
-
-### Claude Code (CLI)
-
-<details>
-<summary>Claude Code setup</summary>
-
-Claude's official command-line interface with MCP support.
-
-**Installation:**
-```bash
-npm install -g @anthropic-ai/claude-code
-```
-
-**Configuration File Location:**
-- **All platforms**: `~/.claude/config.json`
-
-**Configuration:**
-```json
-{
-  "mcpServers": {
-    "sendgrid": {
-      "command": "sendgrid-mcp",
-      "env": {
-        "SENDGRID_API_KEY": "SG.your_api_key_here",
-        "READ_ONLY": "true"
-      }
-    }
-  }
-}
-```
-
-**Usage:**
-```bash
-# Start Claude Code with SendGrid MCP
-claude
-
-# The SendGrid tools will be automatically available
-# Ask Claude: "List my SendGrid automations"
-```
-
----
-
-</details>
-
-### Cline (VS Code Extension)
-
-<details>
-<summary>Cline setup</summary>
-
-Popular VS Code extension with MCP support.
-
-**Installation:**
-1. Install the Cline extension from VS Code marketplace
-2. Open Cline settings
-
-**Configuration File:**
-- Open VS Code Settings
-- Search for "Cline: MCP Settings"
-- Edit the MCP configuration JSON
-
-**Configuration:**
-```json
-{
-  "mcpServers": {
-    "sendgrid": {
-      "command": "sendgrid-mcp",
-      "env": {
-        "SENDGRID_API_KEY": "SG.your_api_key_here",
-        "READ_ONLY": "true"
-      }
-    }
-  }
-}
-```
-
----
-
-</details>
-
-### Zed Editor
-
-<details>
-<summary>Zed setup</summary>
-
-Modern code editor with built-in AI and MCP support.
-
-**Configuration File Location:**
-- **macOS/Linux**: `~/.config/zed/settings.json`
-- **Windows**: `%APPDATA%/Zed/settings.json`
-
-**Configuration:**
-```json
-{
-  "context_servers": {
-    "sendgrid-mcp": {
-      "command": "sendgrid-mcp",
-      "env": {
-        "SENDGRID_API_KEY": "SG.your_api_key_here",
-        "READ_ONLY": "true"
-      }
-    }
-  }
-}
-```
-
----
-
-</details>
-
-### Continue (VS Code Extension)
-
-<details>
-<summary>Continue setup</summary>
-
-Open-source autopilot for VS Code with MCP support.
-
-**Configuration File Location:**
-- **All platforms**: `~/.continue/config.json`
-
-**Configuration:**
-```json
-{
-  "experimental": {
-    "modelContextProtocolServers": [
-      {
-        "command": "sendgrid-mcp",
-        "env": {
-          "SENDGRID_API_KEY": "SG.your_api_key_here",
-          "READ_ONLY": "true"
-        }
-      }
-    ]
-  }
-}
-```
-
----
-
-</details>
-
-### Generic MCP Client
-
-<details>
-<summary>Generic MCP client setup</summary>
-
-For any MCP-compatible client not listed above:
-
-**Command Line:**
-```bash
-# With environment variables
-SENDGRID_API_KEY="SG.your_api_key_here" READ_ONLY="true" sendgrid-mcp
-```
-
-**Configuration Template:**
-```json
-{
-  "command": "sendgrid-mcp",
-  "env": {
-    "SENDGRID_API_KEY": "SG.your_api_key_here",
-    "READ_ONLY": "true"
-  }
-}
-```
-
----
-
-</details>
-
-### Remote / HTTP mode
-
-<details>
-<summary>Remote / HTTP mode (production deployment)</summary>
-
-By default the server speaks **stdio**, which is what Claude Desktop and Claude
-Code launch as a local subprocess. To connect from a *remote* client — Claude
-custom connectors, or OpenAI's Responses API `mcp` tool / Apps SDK — run it in
-**Streamable HTTP** mode.
+Run the server yourself and expose it over Streamable HTTP instead of letting
+a client launch it locally — for Claude custom connectors, OpenAI's Responses
+API `mcp` tool / Apps SDK, or any other remote client.
 
 The MCP endpoint is `POST /mcp`; `GET /health` returns a status document for
 load balancers. Requests are handled **statelessly** (no session id required),
@@ -442,7 +125,7 @@ which is what hosted clients expect.
 
 `none`/`token`/`oauth` below are not alternate ways to *connect* — they're
 three different locks on the one new door (HTTP), as shown in the
-[request-flow diagram in Getting Started](#getting-started).
+[request-flow diagram above](#getting-started).
 
 #### Quick start (local development)
 
@@ -640,6 +323,298 @@ Beyond that:
 ---
 
 </details>
+
+### 2. Get your SendGrid API key
+
+1. Go to [SendGrid API Keys](https://app.sendgrid.com/settings/api_keys)
+2. Click "Create API Key"
+3. Choose "Full Access" or select specific permissions
+4. Copy the generated key (starts with `SG.`)
+
+### 3. Configure your MCP client
+
+<details>
+<summary>MCP Market</summary>
+
+Once your server is deployed (see [Install the server](#1-install-the-server)),
+set your credentials and connect a client.
+
+**Set your environment variables**
+
+Open your deployed server → the **Variables** tab → **My Credentials**, and
+fill in:
+
+![MCP Market Variables tab showing SENDGRID_API_KEY and other credentials](docs/images/mcp-market/set-env-vars.png)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SENDGRID_API_KEY` | ✅ | Your SendGrid API key (starts with SG.) |
+| `MCP_SERVER_NAME` | ❌ | Server name for identification |
+| `MCP_SERVER_VERSION` | ❌ | Server version |
+| `LOG_LEVEL` | ❌ | Logging level (debug, info, warn, error) |
+| `REQUEST_TIMEOUT` | ❌ | API request timeout in milliseconds |
+| `READ_ONLY` | ❌ | Enable read-only mode (true/false) |
+
+Each field saves independently — only `SENDGRID_API_KEY` is required.
+
+**Connect a client**
+
+Click **+ Connect** on your server's page. MCP Market shows one-click
+install options for Claude Desktop, Claude Code, Codex CLI, Cursor, VS Code,
+Windsurf, Cline, JetBrains, Gemini CLI, Amazon Q, Goose, and Continue — pick
+yours and follow its prompt.
+
+![MCP Market's Install server panel with one-click client options](docs/images/mcp-market/connect-client.png)
+
+For any other client, use the **Connection URL** option instead, which gives
+you a Streamable HTTP endpoint unique to your deployment. The examples below
+use `deyikong/sendgrid-mcp` for illustration — yours will have your own
+username and server name:
+
+```
+https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
+```
+
+Wire it up the same way as any other [self-hosted](#1-install-the-server)
+endpoint, e.g.:
+
+```bash
+# Claude Code
+claude mcp add --transport http sendgrid https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
+
+# Codex CLI
+codex mcp add sendgrid --url https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
+```
+
+MCP Market manages hosting, TLS, and availability for the deployed server; for account, billing, or deployment questions, refer to MCP Market directly rather than this repository.
+
+---
+
+</details>
+
+<details>
+<summary>Claude Desktop</summary>
+
+The official Claude desktop application with native MCP support.
+
+**Configuration File Locations:**
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
+
+**Configuration:**
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+**Optional Configuration:**
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "false",
+        "LOG_LEVEL": "info",
+        "REQUEST_TIMEOUT": "30000"
+      }
+    }
+  }
+}
+```
+
+**After configuration:**
+1. Save the file
+2. Restart Claude Desktop
+3. The SendGrid MCP server will be available in Claude
+
+---
+
+</details>
+
+<details>
+<summary>Claude Code (CLI)</summary>
+
+Claude's official command-line interface with MCP support.
+
+**Installation:**
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+**Configuration File Location:**
+- **All platforms**: `~/.claude/config.json`
+
+**Configuration:**
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+**Usage:**
+```bash
+# Start Claude Code with SendGrid MCP
+claude
+
+# The SendGrid tools will be automatically available
+# Ask Claude: "List my SendGrid automations"
+```
+
+---
+
+</details>
+
+<details>
+<summary>Cline (VS Code Extension)</summary>
+
+Popular VS Code extension with MCP support.
+
+**Installation:**
+1. Install the Cline extension from VS Code marketplace
+2. Open Cline settings
+
+**Configuration File:**
+- Open VS Code Settings
+- Search for "Cline: MCP Settings"
+- Edit the MCP configuration JSON
+
+**Configuration:**
+```json
+{
+  "mcpServers": {
+    "sendgrid": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+---
+
+</details>
+
+<details>
+<summary>Zed Editor</summary>
+
+Modern code editor with built-in AI and MCP support.
+
+**Configuration File Location:**
+- **macOS/Linux**: `~/.config/zed/settings.json`
+- **Windows**: `%APPDATA%/Zed/settings.json`
+
+**Configuration:**
+```json
+{
+  "context_servers": {
+    "sendgrid-mcp": {
+      "command": "sendgrid-mcp",
+      "env": {
+        "SENDGRID_API_KEY": "SG.your_api_key_here",
+        "READ_ONLY": "true"
+      }
+    }
+  }
+}
+```
+
+---
+
+</details>
+
+<details>
+<summary>Continue (VS Code Extension)</summary>
+
+Open-source autopilot for VS Code with MCP support.
+
+**Configuration File Location:**
+- **All platforms**: `~/.continue/config.json`
+
+**Configuration:**
+```json
+{
+  "experimental": {
+    "modelContextProtocolServers": [
+      {
+        "command": "sendgrid-mcp",
+        "env": {
+          "SENDGRID_API_KEY": "SG.your_api_key_here",
+          "READ_ONLY": "true"
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+</details>
+
+<details>
+<summary>Generic MCP Client</summary>
+
+For any MCP-compatible client not listed above:
+
+**Command Line:**
+```bash
+# With environment variables
+SENDGRID_API_KEY="SG.your_api_key_here" READ_ONLY="true" sendgrid-mcp
+```
+
+**Configuration Template:**
+```json
+{
+  "command": "sendgrid-mcp",
+  "env": {
+    "SENDGRID_API_KEY": "SG.your_api_key_here",
+    "READ_ONLY": "true"
+  }
+}
+```
+
+---
+
+</details>
+
+## Environment Variables
+
+The server is configured entirely through environment variables. `SENDGRID_API_KEY` is the only required one.
+
+| Variable | Required | Description | Default |
+|----------|----------|-------------|---------|
+| `SENDGRID_API_KEY` | ✅ | Your SendGrid API key (starts with SG.) | - |
+| `READ_ONLY` | ❌ | Enable read-only mode (true/false) | `true` |
+| `MCP_SERVER_NAME` | ❌ | Server name for identification | `sendgrid-mcp` |
+| `MCP_SERVER_VERSION` | ❌ | Server version | `1.0.0` |
+| `LOG_LEVEL` | ❌ | Logging level (debug, info, warn, error) | `info` |
+| `REQUEST_TIMEOUT` | ❌ | API request timeout in milliseconds | `30000` |
+
+**`READ_ONLY` defaults to `true`.** In this mode every tool is registered and visible, but operations that create, update, delete, or send are blocked at runtime with a clear error message — only list/get/search/browser-link tools actually run. This is the safest default while you're getting set up. See [Read-Only Mode](#read-only-mode) for the full breakdown of what's blocked, and set `READ_ONLY=false` once you're ready to allow write and send operations.
+
+These variables are set inside your MCP client's configuration (as an `env` block) — see [Configure your MCP client](#3-configure-your-mcp-client). Self-hosted HTTP mode has its own set of variables (transport, auth, TLS) — see [Install the server](#1-install-the-server).
 
 ## Read-Only Mode
 

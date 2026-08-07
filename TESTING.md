@@ -114,7 +114,7 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 claude mcp add --transport http sendgrid-tls-test
 ## 4. HTTP + OAuth
 
 Easiest realistic path: create a free Auth0 API per the README's
-[Auth0 walkthrough](README.md#remote--http-mode), then use Auth0's own
+[Auth0 walkthrough](README.md#1-install-the-server), then use Auth0's own
 **API → Test tab**, which hands you a ready-made `curl` command to fetch a
 real access token via client-credentials — no app/redirect config needed.
 
