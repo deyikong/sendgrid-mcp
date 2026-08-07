@@ -117,8 +117,8 @@ export function buildApp(): Express {
 
   app.all(
     MCP_PATH,
-    express.json({ limit: MAX_BODY_BYTES }),
     ...guards,
+    express.json({ limit: MAX_BODY_BYTES }),
     (req: Request, res: Response, next: NextFunction) => {
       handleMcpRequest(req, res).catch(next);
     }
