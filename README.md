@@ -105,6 +105,9 @@ From MCP Market's **MCP Servers** page, deploy a custom MCP from either source:
 - **npm** — select the npm source, enter the package name (`sendgrid-mcp`),
   and pick a server name.
 
+![Deploying from a GitHub repo](docs/images/mcp-market/github-install.png)
+![Deploying from an npm package](docs/images/mcp-market/npm-install.png)
+
 Either way, MCP Market builds and runs it for you; it shows up under
 **MCP Servers** with a `Running` status once ready.
 
@@ -112,6 +115,8 @@ Either way, MCP Market builds and runs it for you; it shows up under
 
 Open your deployed server → the **Variables** tab → **My Credentials**, and
 fill in:
+
+![MCP Market Variables tab showing SENDGRID_API_KEY and other credentials](docs/images/mcp-market/set-env-vars.png)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -130,6 +135,8 @@ Click **+ Connect** on your server's page. MCP Market shows one-click
 install options for Claude Desktop, Claude Code, Codex CLI, Cursor, VS Code,
 Windsurf, Cline, JetBrains, Gemini CLI, Amazon Q, Goose, and Continue — pick
 yours and follow its prompt.
+
+![MCP Market's Install server panel with one-click client options](docs/images/mcp-market/connect-client.png)
 
 For any other client, use the **Connection URL** option instead, which gives
 you a Streamable HTTP endpoint unique to your deployment. The examples below
