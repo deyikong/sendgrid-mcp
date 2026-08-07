@@ -31,6 +31,18 @@ transport, and adds the security primitives required to do so safely.
   non-loopback bind, `auth=none` off loopback, a non-loopback `http://` public
   URL, a missing or under-length static token, OAuth without issuer and
   audience, or a half-set TLS pair.
+- **MCP Market listing**: a hosted, one-click deploy of this server at
+  [MCP Market](https://app.mcpmarket.com/deyikong/mcp/sendgrid), for users who
+  don't want to install or run it themselves.
+- **Test suite** covering the new transport end-to-end: the full OAuth token
+  matrix (valid, expired, wrong issuer/audience/signature, missing scope),
+  RFC 9728 metadata, every environment-validation rule, `startHttpTransport()`
+  itself (not just `buildApp()` in isolation) across token/none auth modes,
+  `GET /health`, the 404/500 handlers, DNS-rebinding protection, the
+  4MB request-body limit, and the `MCP_PUBLIC_URL`-only fallback for both
+  `publicOrigin()` and `resourceIdentifier()`. Plus a README/docs consistency
+  suite that checks the README's tool count, version callout, and Tools
+  Summary entries against the live tool and prompt registries.
 
 ### Changed
 
@@ -43,15 +55,63 @@ transport, and adds the security primitives required to do so safely.
 - Bumped `@modelcontextprotocol/sdk` to `^1.30.0` (no source changes required;
   the `McpServer` + `registerTool`/`registerResource`/`registerPrompt` API is
   still current). The server now reports protocol version `2025-06-18`.
+- Restructured the README into a linear, top-to-bottom setup flow (API key →
+  environment variables → install → client configuration), added a
+  categorized "Available Tools" reference with worked examples per category,
+  and added concrete OAuth setup walkthroughs for Auth0, Okta, and Microsoft
+  Entra ID.
+
+### Fixed
+
+- `list_single_sends` was hitting a nonexistent `/search` endpoint; it now
+  calls the documented `GET /v3/marketing/singlesends` collection endpoint and
+  supports a `page_token` for pagination.
+- Added the missing `get_single_send` tool for retrieving a single send
+  campaign's content and settings — bringing the total tool count to 58.
 
 ### Notes
 
 - Per-tool scope enforcement is **not** in this release. `MCP_OAUTH_REQUIRED_SCOPES`
   gates the `/mcp` endpoint as a whole — a token that gets in can call any of
-  the 57 tools. `READ_ONLY=true` remains the real write-protection boundary.
+  the 58 tools. `READ_ONLY=true` remains the real write-protection boundary.
 - HTTP mode is fully backward-compatible with stdio — existing Claude Desktop
   and Claude Code configs need no changes.
 
-## v1.0.4 — 2025
+## v1.0.4 — 2026-02-24
 
-- Fix repository URL for provenance verification
+- Fixed the `repository`, `bugs`, and `homepage` URLs in `package.json` to
+  point at the `deyikong` GitHub org (they previously pointed at a stale
+  `dkong` org), which npm's provenance attestation checks against.
+
+## v1.0.3 — 2026-02-24
+
+- Fixed the `bin` path in `package.json` so the globally-installed
+  `sendgrid-mcp` command resolves correctly.
+
+## v1.0.2 — 2026-02-24
+
+- Committed `package-lock.json` (previously gitignored) and fixed the
+  `NODE_AUTH_TOKEN` → `NPM_TOKEN` mismatch in the GitHub Actions workflow, so
+  `npm ci` and automated npm publishing on release actually work.
+- Added a `LICENSE` file and filled in npm registry metadata: description,
+  keywords, `author`, `repository`, `bugs`, `homepage`, and an `engines` field
+  requiring Node 18+.
+
+## v1.0.1 — 2025-08-26
+
+- Added Dynamic Template Management: create/list/get/update/delete templates
+  and versions, plus the AI-optimized `create_html_template` for creating a
+  template and its first version in one call.
+- Added Email Statistics & Analytics: global stats, and breakdowns by
+  browser, device, client type, country, and mailbox provider.
+- Expanded Contact Management: list/custom-field/segment CRUD operations
+  alongside the original contact CRUD tools.
+- Added `READ_ONLY` mode (defaults to `true`), blocking mutating operations
+  at runtime while keeping every tool registered and visible.
+- Added help prompts covering the newly added tool categories.
+
+## v1.0.0 — 2025-08-20
+
+- Initial release: Marketing Automations, Single Send Campaigns, Contact
+  Management, and Mail Sending tools, plus the corresponding MCP resources
+  and help prompts.
