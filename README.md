@@ -93,30 +93,63 @@ Pick your client below and follow its instructions — each one is self-containe
 <details>
 <summary>MCP Market setup</summary>
 
-[MCP Market](https://app.mcpmarket.com/deyikong/mcp/sendgrid) deploys and hosts this server for you — nothing to install locally and no environment variables to manage on your machine. You still need a [SendGrid API key](#1-get-your-sendgrid-api-key); MCP Market takes it when you deploy the listing.
+[MCP Market](https://app.mcpmarket.com/deyikong/mcp/sendgrid) deploys and hosts this server for you — nothing to install locally and no environment variables to manage on your machine. You still need a [SendGrid API key](#1-get-your-sendgrid-api-key); you'll enter it into MCP Market instead of your own shell/config.
 
-**Setup:**
-1. Open the [SendGrid MCP listing on MCP Market](https://app.mcpmarket.com/deyikong/mcp/sendgrid) and sign in.
-2. Deploy the server, providing your SendGrid API key when prompted.
-3. MCP Market gives you a hosted connector URL:
-   ```
-   https://link.mcpmarket.com/deyikong/sendgrid/mcp
-   ```
-4. Connect your client to that URL using whichever of these matches your setup:
+**1. Deploy the server**
 
-**Claude Code (CLI):**
-```bash
-claude mcp add --transport http 'sendgrid' 'https://link.mcpmarket.com/deyikong/sendgrid/mcp'
+From MCP Market's **MCP Servers** page, deploy a custom MCP from either source:
+
+- **GitHub** — select the GitHub source, choose Public or Private repo, paste
+  the repo URL (`https://github.com/deyikong/sendgrid-mcp`), and pick a
+  server name.
+- **npm** — select the npm source, enter the package name (`sendgrid-mcp`),
+  and pick a server name.
+
+Either way, MCP Market builds and runs it for you; it shows up under
+**MCP Servers** with a `Running` status once ready.
+
+**2. Set your environment variables**
+
+Open your deployed server → the **Variables** tab → **My Credentials**, and
+fill in:
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SENDGRID_API_KEY` | ✅ | Your SendGrid API key (starts with SG.) |
+| `MCP_SERVER_NAME` | ❌ | Server name for identification |
+| `MCP_SERVER_VERSION` | ❌ | Server version |
+| `LOG_LEVEL` | ❌ | Logging level (debug, info, warn, error) |
+| `REQUEST_TIMEOUT` | ❌ | API request timeout in milliseconds |
+| `READ_ONLY` | ❌ | Enable read-only mode (true/false) |
+
+Each field saves independently — only `SENDGRID_API_KEY` is required.
+
+**3. Connect a client**
+
+Click **+ Connect** on your server's page. MCP Market shows one-click
+install options for Claude Desktop, Claude Code, Codex CLI, Cursor, VS Code,
+Windsurf, Cline, JetBrains, Gemini CLI, Amazon Q, Goose, and Continue — pick
+yours and follow its prompt.
+
+For any other client, use the **Connection URL** option instead, which gives
+you a Streamable HTTP endpoint unique to your deployment. The examples below
+use `deyikong/sendgrid-mcp` for illustration — yours will have your own
+username and server name:
+
+```
+https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
 ```
 
-**Claude Desktop:** add `https://link.mcpmarket.com/deyikong/sendgrid/mcp` as a custom connector (Settings → Connectors → Add custom connector).
+Wire it up the same way as any other [Remote / HTTP mode](#remote--http-mode)
+endpoint, e.g.:
 
-**Codex CLI:**
 ```bash
-codex mcp add 'sendgrid' --url 'https://link.mcpmarket.com/deyikong/sendgrid/mcp'
-```
+# Claude Code
+claude mcp add --transport http sendgrid https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
 
-**Other clients:** any client that speaks Streamable HTTP MCP can connect using the same URL — see [Remote / HTTP mode](#remote--http-mode) for the underlying protocol details. MCP Market's listing page shows connector instructions for additional clients as well.
+# Codex CLI
+codex mcp add sendgrid --url https://link.mcpmarket.com/<your-username>/<your-server-name>/mcp
+```
 
 MCP Market manages hosting, TLS, and availability for the deployed server; for account, billing, or deployment questions, refer to MCP Market directly rather than this repository.
 
