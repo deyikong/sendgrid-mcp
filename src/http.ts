@@ -138,7 +138,7 @@ export function buildApp(): Express {
   return app;
 }
 
-export async function startHttpTransport(): Promise<void> {
+export async function startHttpTransport(): Promise<Server> {
   const env = getEnv();
   const app = buildApp();
 
@@ -189,4 +189,12 @@ export async function startHttpTransport(): Promise<void> {
   const shutdown = () => server.close(() => process.exit(0));
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);
+  // Deregister once the server closes so repeated start/stop cycles (e.g. in
+  // tests) don't leak listeners onto the shared process object.
+  server.once("close", () => {
+    process.off("SIGTERM", shutdown);
+    process.off("SIGINT", shutdown);
+  });
+
+  return server;
 }
