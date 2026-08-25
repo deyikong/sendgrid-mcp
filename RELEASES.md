@@ -1,5 +1,32 @@
 # Release Notes
 
+## v1.1.2 — 2026-08-25
+
+Four more `contacts` tool bugs, found by auditing every tool file against
+SendGrid's public OpenAPI spec repo ([twilio/sendgrid-oai](https://github.com/twilio/sendgrid-oai))
+rather than relying on the client author's original assumptions about each
+endpoint.
+
+### Fixed
+
+- `update_custom_field` sent `PUT`; the spec only documents `PATCH` on
+  `/v3/marketing/field_definitions/{id}`.
+- `list_segments` hit the deprecated v1 Segments API (dead since December
+  2022) instead of v2 (`/v3/marketing/segments/2.0`), which
+  `update_segment`/`delete_segment` already used — segments created since
+  the deprecation wouldn't show up.
+- `list_contacts` sent `page_size`/`page_token` to `GET /v3/marketing/contacts`,
+  which takes no parameters and only ever returns the 50 most recent
+  contacts — SendGrid deprecated pagination on this endpoint entirely.
+- `search_contacts` sent `page_size`/`page_token` in the body to
+  `POST /v3/marketing/contacts/search`, which only documents a `query`
+  field and caps results at 50 with no pagination.
+
+`mail`, `misc`, and `templates` tools were also audited against their specs
+and found correct. `automations` has no public OpenAPI spec to check against
+(none of the 46 spec files in `twilio/sendgrid-oai` cover it), so its
+endpoints remain unverified by this method.
+
 ## v1.1.1 — 2026-08-25
 
 Bug fixes in the stats, contacts, and templates tools, plus a new request-building
