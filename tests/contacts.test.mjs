@@ -72,13 +72,13 @@ test("delete_email_list DELETEs /v3/marketing/lists/:list_id", async () => {
   assert.equal(result.content[0].text, "List list-1 deleted successfully.");
 });
 
-test("list_segments hits GET /v3/marketing/segments", async () => {
+test("list_segments hits GET /v3/marketing/segments/2.0, not the deprecated v1 endpoint", async () => {
   const fixture = { results: [{ id: "seg-1", name: "Active Users" }] };
   const calls = mockFetch(fixture);
 
   const result = await contactTools.list_segments.handler();
 
-  assert.equal(calls[0].url.pathname, "/v3/marketing/segments");
+  assert.equal(calls[0].url.pathname, "/v3/marketing/segments/2.0");
   assert.deepEqual(JSON.parse(result.content[0].text), fixture);
 });
 
@@ -149,14 +149,14 @@ test("create_custom_field POSTs to /v3/marketing/field_definitions with name and
   assert.deepEqual(JSON.parse(result.content[0].text), fixture);
 });
 
-test("update_custom_field PUTs to /v3/marketing/field_definitions/:field_id with the new name", async () => {
+test("update_custom_field PATCHes /v3/marketing/field_definitions/:field_id with the new name", async () => {
   const fixture = { id: "f1", name: "dob" };
   const calls = mockFetch(fixture);
 
   const result = await contactTools.update_custom_field.handler({ field_id: "f1", name: "dob" });
 
   assert.equal(calls[0].url.pathname, "/v3/marketing/field_definitions/f1");
-  assert.equal(calls[0].init.method, "PUT");
+  assert.equal(calls[0].init.method, "PATCH");
   assert.deepEqual(calledBody(calls), { name: "dob" });
   assert.deepEqual(JSON.parse(result.content[0].text), fixture);
 });
@@ -252,31 +252,27 @@ test("update_contact PUTs to /v3/marketing/contacts with the contacts array", as
   assert.deepEqual(JSON.parse(result.content[0].text), fixture);
 });
 
-test("search_contacts POSTs to /v3/marketing/contacts/search with query, page_size, and page_token when provided", async () => {
+test("search_contacts POSTs to /v3/marketing/contacts/search with only the query", async () => {
   const fixture = { result: [], contact_count: 0 };
   const calls = mockFetch(fixture);
 
-  const result = await contactTools.search_contacts.handler({
-    query: "email LIKE '%@example.com'",
-    page_size: 25,
-    page_token: "token-abc",
-  });
+  const result = await contactTools.search_contacts.handler({ query: "email LIKE '%@example.com'" });
 
   assert.equal(calls[0].url.pathname, "/v3/marketing/contacts/search");
   assert.equal(calls[0].init.method, "POST");
-  assert.deepEqual(calledBody(calls), {
+  assert.deepEqual(calledBody(calls), { query: "email LIKE '%@example.com'" });
+  assert.deepEqual(JSON.parse(result.content[0].text), fixture);
+});
+
+test("search_contacts never sends page_size/page_token, since this endpoint has no pagination", async () => {
+  const fixture = { result: [], contact_count: 0 };
+  const calls = mockFetch(fixture);
+
+  await contactTools.search_contacts.handler({
     query: "email LIKE '%@example.com'",
     page_size: 25,
     page_token: "token-abc",
   });
-  assert.deepEqual(JSON.parse(result.content[0].text), fixture);
-});
-
-test("search_contacts omits page_size and page_token from the body when not provided", async () => {
-  const fixture = { result: [], contact_count: 0 };
-  const calls = mockFetch(fixture);
-
-  await contactTools.search_contacts.handler({ query: "email LIKE '%@example.com'" });
 
   const body = calledBody(calls);
   assert.deepEqual(body, { query: "email LIKE '%@example.com'" });
@@ -297,25 +293,24 @@ test("search_contacts_by_emails POSTs to /v3/marketing/contacts/search/emails wi
   assert.deepEqual(JSON.parse(result.content[0].text), fixture);
 });
 
-test("list_contacts hits GET /v3/marketing/contacts with page_size and page_token when provided", async () => {
+test("list_contacts hits GET /v3/marketing/contacts with no query params, since this endpoint takes none", async () => {
   const fixture = { result: [] };
   const calls = mockFetch(fixture);
 
-  const result = await contactTools.list_contacts.handler({ page_size: 10, page_token: "tok-1" });
+  const result = await contactTools.list_contacts.handler();
 
   assert.equal(calls[0].url.pathname, "/v3/marketing/contacts");
-  assert.equal(calls[0].url.searchParams.get("page_size"), "10");
-  assert.equal(calls[0].url.searchParams.get("page_token"), "tok-1");
+  assert.deepEqual(Array.from(calls[0].url.searchParams.keys()), []);
   assert.deepEqual(JSON.parse(result.content[0].text), fixture);
 });
 
-test("list_contacts defaults page_size to 100 and omits page_token when not provided", async () => {
+test("list_contacts never sends page_size/page_token, even if a caller passes them", async () => {
   const fixture = { result: [] };
   const calls = mockFetch(fixture);
 
-  await contactTools.list_contacts.handler({});
+  await contactTools.list_contacts.handler({ page_size: 10, page_token: "tok-1" });
 
-  assert.equal(calls[0].url.searchParams.get("page_size"), "100");
+  assert.equal(calls[0].url.searchParams.has("page_size"), false);
   assert.equal(calls[0].url.searchParams.has("page_token"), false);
 });
 

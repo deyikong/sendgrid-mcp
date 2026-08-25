@@ -90,7 +90,7 @@ export const contactTools = {
       description: "List all segments with their parent list relationships",
     },
     handler: async (): Promise<ToolResult> => {
-      const result = await makeRequest("https://api.sendgrid.com/v3/marketing/segments");
+      const result = await makeRequest("https://api.sendgrid.com/v3/marketing/segments/2.0");
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     },
   },
@@ -224,7 +224,7 @@ export const contactTools = {
       }
       
       const result = await makeRequest(`https://api.sendgrid.com/v3/marketing/field_definitions/${field_id}`, {
-        method: "PUT",
+        method: "PATCH",
         body: JSON.stringify({ name }),
       });
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -402,21 +402,14 @@ export const contactTools = {
   search_contacts: {
     config: {
       title: "Search Contacts",
-      description: "Search for contacts using query conditions without creating a segment",
+      description: "Search for contacts using query conditions without creating a segment. Only the first 50 matching contacts are returned — this endpoint does not support pagination.",
       inputSchema: {
         query: z.string().describe("Search query using segment conditions (e.g., 'email LIKE \"@example.com\"')"),
-        page_size: z.number().optional().default(50).describe("Number of results to return (max 100)"),
-        page_token: z.string().optional().describe("Token for pagination"),
       },
     },
-    handler: async ({ query, page_size, page_token }: { query: string; page_size?: number; page_token?: string }): Promise<ToolResult> => {
-      const requestBody: any = {
-        query: query
-      };
-      
-      if (page_size) requestBody.page_size = page_size;
-      if (page_token) requestBody.page_token = page_token;
-      
+    handler: async ({ query }: { query: string }): Promise<ToolResult> => {
+      const requestBody = { query };
+
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/contacts/search", {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -445,17 +438,10 @@ export const contactTools = {
   list_contacts: {
     config: {
       title: "List All Contacts",
-      description: "List all contacts with optional pagination",
-      inputSchema: {
-        page_size: z.number().optional().default(100).describe("Number of contacts to return (max 1000)"),
-        page_token: z.string().optional().describe("Token for pagination"),
-      },
+      description: "List up to 50 of your most recently uploaded/updated contacts, sorted by email address. This endpoint takes no parameters — SendGrid deprecated pagination here; use search_contacts or export for anything beyond a quick sample.",
     },
-    handler: async ({ page_size, page_token }: { page_size?: number; page_token?: string }): Promise<ToolResult> => {
-      let url = `https://api.sendgrid.com/v3/marketing/contacts?page_size=${page_size || 100}`;
-      if (page_token) url += `&page_token=${page_token}`;
-      
-      const result = await makeRequest(url);
+    handler: async (): Promise<ToolResult> => {
+      const result = await makeRequest("https://api.sendgrid.com/v3/marketing/contacts");
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     },
   },
