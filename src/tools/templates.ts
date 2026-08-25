@@ -358,12 +358,21 @@ export const templateTools = {
           }
         }
         
-        const version = await makeRequest(`https://api.sendgrid.com/v3/templates/${template_id}/versions`, {
-          method: "POST",
-          body: JSON.stringify(versionData),
-        });
-        
-        return { 
+        let version;
+        try {
+          version = await makeRequest(`https://api.sendgrid.com/v3/templates/${template_id}/versions`, {
+            method: "POST",
+            body: JSON.stringify(versionData),
+          });
+        } catch (error: any) {
+          // Delete the template we just created since version creation failed
+          await makeRequest(`https://api.sendgrid.com/v3/templates/${template_id}`, {
+            method: "DELETE",
+          });
+          return { content: [{ type: "text", text: `❌ Error creating template version: ${error.message || 'Unknown error occurred'}. The orphaned template (${template_id}) was rolled back.` }] };
+        }
+
+        return {
           content: [{ 
             type: "text", 
             text: `✅ HTML Template created successfully!

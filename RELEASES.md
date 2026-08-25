@@ -1,5 +1,46 @@
 # Release Notes
 
+## v1.1.1 — 2026-08-25
+
+Bug fixes in the stats, contacts, and templates tools, plus a new request-building
+test suite for the tool handlers that didn't have one.
+
+### Fixed
+
+- `get_stats_by_device_type` was hitting `/v3/clients/stats` (the client-type
+  endpoint) instead of `/v3/devices/stats` — device and client type are
+  separate SendGrid endpoints with separate metrics. The `sendgrid://stats/devices`
+  resource had the same bug.
+- Removed three filter parameters that SendGrid silently ignores because the
+  underlying endpoints don't support them: `client_type` on
+  `get_stats_by_client_type`, `device_type` on `get_stats_by_device_type`, and
+  `state` on `get_stats_by_country` (geo stats only filters by `country`).
+- Added `limit`/`offset` pagination to `get_stats_by_browser`,
+  `get_stats_by_device_type`, `get_stats_by_country`, and
+  `get_stats_by_mailbox_provider` — SendGrid paginates these at 500 results by
+  default, which callers with high-volume accounts and day-level granularity
+  could otherwise silently truncate.
+- `delete_sender` called `DELETE /v3/verified_senders/{id}`, a different
+  resource family than `list_senders`/`create_sender` (`/v3/marketing/senders`)
+  — deleting a sender created via `create_sender` would hit the wrong
+  endpoint/ID space. Now consistent across all three.
+- `create_html_template` left an orphaned, empty template behind if the
+  version-creation request itself failed (it already cleaned up correctly for
+  a local invalid-`test_data` error, just not a real API failure). It now
+  rolls back the template in both cases.
+- Tool and resource descriptions for the stats endpoints now document each
+  endpoint's actual (narrower) metric set — e.g. browser/device/client-type
+  stats only return a subset of the fields `get_global_stats` and
+  `get_stats_by_mailbox_provider` return.
+
+### Added
+
+- A `node:test` suite covering request building for the `automations`,
+  `contacts`, `mail`, `misc`, `stats`, and `templates` tool handlers (87 new
+  tests, on top of the existing transport/auth/env/campaigns suite), plus a
+  dedicated test confirming the `READ_ONLY` write guard actually blocks writes
+  by default.
+
 ## v1.1.0 — 2026-08-06
 
 This release lets the server be reached from remote MCP clients (Claude custom

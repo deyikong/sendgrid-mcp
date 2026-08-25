@@ -643,13 +643,13 @@ Global Statistics:
 - get_stats_overview: Get comprehensive statistics across multiple dimensions
 
 Performance by Technology:
-- get_stats_by_browser: Statistics broken down by browser (Chrome, Firefox, Safari, etc.)
-- get_stats_by_client_type: Statistics by email client type (desktop, mobile, webmail)
-- get_stats_by_device_type: Statistics by device type (desktop, mobile, tablet)
-- get_stats_by_mailbox_provider: Statistics by provider (Gmail, Outlook, Yahoo, etc.)
+- get_stats_by_browser: Statistics broken down by browser (Chrome, Firefox, Safari, etc.) — clicks/unique_clicks only
+- get_stats_by_client_type: Statistics by email client type (desktop, mobile, webmail) — opens/unique_opens only, no filtering or pagination
+- get_stats_by_device_type: Statistics by device type (desktop, mobile, tablet) — opens/unique_opens only
+- get_stats_by_mailbox_provider: Statistics by provider (Gmail, Outlook, Yahoo, etc.) — broadest metric set, but no unsubscribes
 
 Geographic Analysis:
-- get_stats_by_country: Statistics broken down by country and state/province
+- get_stats_by_country: Statistics broken down by country — clicks/unique_clicks/opens/unique_opens only, filter by country only (no state/province)
 
 Advanced Segmentation:
 - get_category_stats: Statistics for specific email categories (13 months history)
@@ -660,13 +660,13 @@ Key Parameters:
 - end_date: Optional, defaults to today
 - aggregated_by: day/week/month (default: day)
 
-Common metrics included:
+Common metrics (full set only on get_global_stats and get_stats_by_mailbox_provider; other breakdowns return a narrower subset — see each tool's description):
 - delivered: Successfully delivered emails
 - opens: Email open events
-- clicks: Link click events  
+- clicks: Link click events
 - bounces: Hard and soft bounces
 - spam_reports: Emails marked as spam
-- unsubscribes: Unsubscribe requests
+- unsubscribes: Unsubscribe requests (not available on get_stats_by_mailbox_provider)
 - blocks: Emails blocked by recipient servers
 
 Example workflows:

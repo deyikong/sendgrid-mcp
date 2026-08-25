@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 
 *Built and maintained by a SendGrid engineer, as an independent project — not an official SendGrid product.*
 
-> **v1.1.0 — new:** Streamable HTTP transport with OAuth 2.1 (resource server), in-process TLS, and proxy support. Connect this server from Claude custom connectors, the OpenAI Responses API `mcp` tool, or any remote MCP client. See [Install the server](#1-install-the-server) and [RELEASES.md](./RELEASES.md).
+> **v1.1.1 — new:** Fixed several stats/contacts/templates tools that hit the wrong SendGrid endpoint or sent parameters SendGrid silently ignores, and added a full request-building test suite for the marketing/contacts/templates/mail tool handlers. See [RELEASES.md](./RELEASES.md).
 
 ## Features
 

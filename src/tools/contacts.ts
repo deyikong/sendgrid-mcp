@@ -474,7 +474,7 @@ export const contactTools = {
         return { content: [{ type: "text", text: readOnlyCheck.message! }] };
       }
       
-      const result = await makeRequest(`https://api.sendgrid.com/v3/verified_senders/${sender_id}`, {
+      const result = await makeRequest(`https://api.sendgrid.com/v3/marketing/senders/${sender_id}`, {
         method: "DELETE",
       });
       return { content: [{ type: "text", text: `Sender identity ${sender_id} deleted successfully.` }] };

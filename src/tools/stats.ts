@@ -26,20 +26,24 @@ export const statsTools = {
   get_stats_by_browser: {
     config: {
       title: "Get Email Statistics by Browser",
-      description: "Retrieve email statistics grouped by browser type",
+      description: "Retrieve email statistics grouped by browser type. Only clicks and unique_clicks metrics are available.",
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
         aggregated_by: z.enum(["day", "week", "month"]).optional().default("day").describe("How to group the statistics"),
         browsers: z.string().optional().describe("Comma-separated list of browsers to filter by"),
+        limit: z.number().int().optional().describe("Number of results to return per page (SendGrid defaults to 500)"),
+        offset: z.number().int().optional().describe("Number of results to skip for pagination"),
       },
     },
-    handler: async ({ start_date, end_date, aggregated_by, browsers }: { start_date: string; end_date?: string; aggregated_by?: string; browsers?: string }): Promise<ToolResult> => {
+    handler: async ({ start_date, end_date, aggregated_by, browsers, limit, offset }: { start_date: string; end_date?: string; aggregated_by?: string; browsers?: string; limit?: number; offset?: number }): Promise<ToolResult> => {
       let url = `https://api.sendgrid.com/v3/browsers/stats?start_date=${start_date}`;
       if (end_date) url += `&end_date=${end_date}`;
       if (aggregated_by) url += `&aggregated_by=${aggregated_by}`;
       if (browsers) url += `&browsers=${encodeURIComponent(browsers)}`;
-      
+      if (limit !== undefined) url += `&limit=${limit}`;
+      if (offset !== undefined) url += `&offset=${offset}`;
+
       const result = await makeRequest(url);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     },
@@ -48,20 +52,18 @@ export const statsTools = {
   get_stats_by_client_type: {
     config: {
       title: "Get Email Statistics by Client Type",
-      description: "Retrieve email statistics grouped by email client type",
+      description: "Retrieve email statistics grouped by email client type (desktop, mobile, webmail). Only opens and unique_opens metrics are available. This endpoint does not support filtering or pagination.",
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
         aggregated_by: z.enum(["day", "week", "month"]).optional().default("day").describe("How to group the statistics"),
-        client_type: z.string().optional().describe("Comma-separated list of client types to filter by"),
       },
     },
-    handler: async ({ start_date, end_date, aggregated_by, client_type }: { start_date: string; end_date?: string; aggregated_by?: string; client_type?: string }): Promise<ToolResult> => {
+    handler: async ({ start_date, end_date, aggregated_by }: { start_date: string; end_date?: string; aggregated_by?: string }): Promise<ToolResult> => {
       let url = `https://api.sendgrid.com/v3/clients/stats?start_date=${start_date}`;
       if (end_date) url += `&end_date=${end_date}`;
       if (aggregated_by) url += `&aggregated_by=${aggregated_by}`;
-      if (client_type) url += `&client_type=${encodeURIComponent(client_type)}`;
-      
+
       const result = await makeRequest(url);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     },
@@ -70,20 +72,22 @@ export const statsTools = {
   get_stats_by_device_type: {
     config: {
       title: "Get Email Statistics by Device Type",
-      description: "Retrieve email statistics grouped by device type (desktop, mobile, tablet)",
+      description: "Retrieve email statistics grouped by device type (desktop, mobile, tablet). Only opens and unique_opens metrics are available.",
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
         aggregated_by: z.enum(["day", "week", "month"]).optional().default("day").describe("How to group the statistics"),
-        device_type: z.string().optional().describe("Comma-separated list of device types to filter by"),
+        limit: z.number().int().optional().describe("Number of results to return per page (SendGrid defaults to 500)"),
+        offset: z.number().int().optional().describe("Number of results to skip for pagination"),
       },
     },
-    handler: async ({ start_date, end_date, aggregated_by, device_type }: { start_date: string; end_date?: string; aggregated_by?: string; device_type?: string }): Promise<ToolResult> => {
-      let url = `https://api.sendgrid.com/v3/clients/stats?start_date=${start_date}`;
+    handler: async ({ start_date, end_date, aggregated_by, limit, offset }: { start_date: string; end_date?: string; aggregated_by?: string; limit?: number; offset?: number }): Promise<ToolResult> => {
+      let url = `https://api.sendgrid.com/v3/devices/stats?start_date=${start_date}`;
       if (end_date) url += `&end_date=${end_date}`;
       if (aggregated_by) url += `&aggregated_by=${aggregated_by}`;
-      if (device_type) url += `&device_type=${encodeURIComponent(device_type)}`;
-      
+      if (limit !== undefined) url += `&limit=${limit}`;
+      if (offset !== undefined) url += `&offset=${offset}`;
+
       const result = await makeRequest(url);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     },
@@ -91,23 +95,25 @@ export const statsTools = {
 
   get_stats_by_country: {
     config: {
-      title: "Get Email Statistics by Country and State/Province",
-      description: "Retrieve email statistics grouped by geographic location",
+      title: "Get Email Statistics by Country",
+      description: "Retrieve email statistics grouped by country. Only clicks, unique_clicks, opens, and unique_opens metrics are available. Filtering is by country only (no state/province filter exists).",
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
         aggregated_by: z.enum(["day", "week", "month"]).optional().default("day").describe("How to group the statistics"),
         country: z.string().optional().describe("ISO 3166-1 alpha-2 country code to filter by"),
-        state: z.string().optional().describe("State or province to filter by"),
+        limit: z.number().int().optional().describe("Number of results to return per page (SendGrid defaults to 500)"),
+        offset: z.number().int().optional().describe("Number of results to skip for pagination"),
       },
     },
-    handler: async ({ start_date, end_date, aggregated_by, country, state }: { start_date: string; end_date?: string; aggregated_by?: string; country?: string; state?: string }): Promise<ToolResult> => {
+    handler: async ({ start_date, end_date, aggregated_by, country, limit, offset }: { start_date: string; end_date?: string; aggregated_by?: string; country?: string; limit?: number; offset?: number }): Promise<ToolResult> => {
       let url = `https://api.sendgrid.com/v3/geo/stats?start_date=${start_date}`;
       if (end_date) url += `&end_date=${end_date}`;
       if (aggregated_by) url += `&aggregated_by=${aggregated_by}`;
       if (country) url += `&country=${encodeURIComponent(country)}`;
-      if (state) url += `&state=${encodeURIComponent(state)}`;
-      
+      if (limit !== undefined) url += `&limit=${limit}`;
+      if (offset !== undefined) url += `&offset=${offset}`;
+
       const result = await makeRequest(url);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     },
@@ -116,20 +122,24 @@ export const statsTools = {
   get_stats_by_mailbox_provider: {
     config: {
       title: "Get Email Statistics by Mailbox Provider",
-      description: "Retrieve email statistics grouped by mailbox provider (Gmail, Outlook, Yahoo, etc.)",
+      description: "Retrieve email statistics grouped by mailbox provider (Gmail, Outlook, Yahoo, etc.). Broadest metric set of all stats breakdowns: blocks, bounces, clicks, deferred, delivered, drops, opens, processed, requests, spam_reports, unique_clicks, unique_opens. Note: no unsubscribes metric.",
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
         aggregated_by: z.enum(["day", "week", "month"]).optional().default("day").describe("How to group the statistics"),
         mailbox_providers: z.string().optional().describe("Comma-separated list of mailbox providers to filter by"),
+        limit: z.number().int().optional().describe("Number of results to return per page (SendGrid defaults to 500)"),
+        offset: z.number().int().optional().describe("Number of results to skip for pagination"),
       },
     },
-    handler: async ({ start_date, end_date, aggregated_by, mailbox_providers }: { start_date: string; end_date?: string; aggregated_by?: string; mailbox_providers?: string }): Promise<ToolResult> => {
+    handler: async ({ start_date, end_date, aggregated_by, mailbox_providers, limit, offset }: { start_date: string; end_date?: string; aggregated_by?: string; mailbox_providers?: string; limit?: number; offset?: number }): Promise<ToolResult> => {
       let url = `https://api.sendgrid.com/v3/mailbox_providers/stats?start_date=${start_date}`;
       if (end_date) url += `&end_date=${end_date}`;
       if (aggregated_by) url += `&aggregated_by=${aggregated_by}`;
       if (mailbox_providers) url += `&mailbox_providers=${encodeURIComponent(mailbox_providers)}`;
-      
+      if (limit !== undefined) url += `&limit=${limit}`;
+      if (offset !== undefined) url += `&offset=${offset}`;
+
       const result = await makeRequest(url);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     },

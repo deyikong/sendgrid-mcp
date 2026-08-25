@@ -167,7 +167,7 @@ export const sendgridResources = {
   "sendgrid://stats/browsers": {
     config: {
       name: "Email Statistics by Browser",
-      description: "Email performance metrics broken down by browser type",
+      description: "Email performance metrics broken down by browser type (clicks/unique_clicks only)",
       mimeType: "application/json",
     },
     handler: async () => {
@@ -191,14 +191,14 @@ export const sendgridResources = {
   "sendgrid://stats/devices": {
     config: {
       name: "Email Statistics by Device Type",
-      description: "Email performance metrics broken down by device type (desktop, mobile, tablet)",
+      description: "Email performance metrics broken down by device type (desktop, mobile, tablet) (opens/unique_opens only)",
       mimeType: "application/json",
     },
     handler: async () => {
       const endDate = new Date().toISOString().split('T')[0];
       const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 7 days ago
       
-      const deviceStats = await makeRequest(`https://api.sendgrid.com/v3/clients/stats?start_date=${startDate}&end_date=${endDate}&aggregated_by=day`);
+      const deviceStats = await makeRequest(`https://api.sendgrid.com/v3/devices/stats?start_date=${startDate}&end_date=${endDate}&aggregated_by=day`);
       
       return {
         contents: [
@@ -215,7 +215,7 @@ export const sendgridResources = {
   "sendgrid://stats/geography": {
     config: {
       name: "Email Statistics by Geography",
-      description: "Email performance metrics broken down by country and region",
+      description: "Email performance metrics broken down by country (clicks/unique_clicks/opens/unique_opens only, no state/region filter)",
       mimeType: "application/json",
     },
     handler: async () => {
@@ -239,7 +239,7 @@ export const sendgridResources = {
   "sendgrid://stats/providers": {
     config: {
       name: "Email Statistics by Mailbox Provider",
-      description: "Email performance metrics broken down by mailbox provider (Gmail, Outlook, Yahoo, etc.)",
+      description: "Email performance metrics broken down by mailbox provider (Gmail, Outlook, Yahoo, etc.) (broadest metric set of all breakdowns, but no unsubscribes)",
       mimeType: "application/json",
     },
     handler: async () => {
