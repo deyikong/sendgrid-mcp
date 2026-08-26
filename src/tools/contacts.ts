@@ -399,7 +399,7 @@ export const contactTools = {
             state_province_region: z.string().optional().describe("State/Province/Region"),
             postal_code: z.string().optional().describe("Postal code"),
             country: z.string().optional().describe("Country"),
-            custom_fields: z.record(z.any()).optional().describe("Custom field values"),
+            custom_fields: z.record(z.string(), z.any()).optional().describe("Custom field values"),
           })
         ).describe("Array of contact objects with updates"),
       },

@@ -15,7 +15,7 @@ export const mailTools = {
           cc: z.array(EmailAddressSchema).optional(),
           bcc: z.array(EmailAddressSchema).optional(),
           subject: z.string().optional(),
-          substitutions: z.record(z.any()).optional(),
+          substitutions: z.record(z.string(), z.any()).optional(),
         })).describe("Personalization settings for recipients"),
         from: EmailAddressSchema,
         subject: z.string().optional().describe("Default subject if not set in personalizations"),

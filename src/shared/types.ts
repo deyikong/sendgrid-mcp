@@ -7,7 +7,7 @@ export const ContactSchema = z.object({
   email: z.string().describe("Contact email address"),
   first_name: z.string().optional().describe("First name"),
   last_name: z.string().optional().describe("Last name"),
-  custom_fields: z.record(z.any()).optional().describe("Custom field values"),
+  custom_fields: z.record(z.string(), z.any()).optional().describe("Custom field values"),
 });
 
 export const EmailAddressSchema = z.object({
