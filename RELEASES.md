@@ -1,5 +1,12 @@
 # Release Notes
 
+## [1.2.0](https://github.com/deyikong/sendgrid-mcp/compare/sendgrid-mcp-v1.1.2...sendgrid-mcp-v1.2.0) (2026-08-26)
+
+
+### Features
+
+* publish server metadata to the MCP registry via OIDC ([c7203c9](https://github.com/deyikong/sendgrid-mcp/commit/c7203c9be7f4c548082f6604458344eb60601253))
+
 ## v1.1.2 — 2026-08-25
 
 Four more `contacts` tool bugs, found by auditing every tool file against
