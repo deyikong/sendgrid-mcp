@@ -4,6 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { createServer } from "./server.js";
 import { startHttpTransport } from "./http.js";
 import { validateEnvironment, getSafeEnvInfo } from "./shared/env.js";
+import { logger } from "./shared/logger.js";
 
 async function main() {
   try {
@@ -11,8 +12,8 @@ async function main() {
     const env = validateEnvironment();
     const envInfo = getSafeEnvInfo();
 
-    console.error(`Starting ${envInfo.serverName} v${envInfo.serverVersion}`);
-    console.error(`Environment: ${JSON.stringify(envInfo, null, 2)}`);
+    logger.info(`Starting ${envInfo.serverName} v${envInfo.serverVersion}`);
+    logger.debug(`Environment: ${JSON.stringify(envInfo, null, 2)}`);
 
     if (env.MCP_TRANSPORT === "http") {
       await startHttpTransport();
@@ -22,14 +23,14 @@ async function main() {
     const server = createServer();
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("SendGrid MCP Server running on stdio");
+    logger.info("SendGrid MCP Server running on stdio");
   } catch (error) {
-    console.error("Failed to start server:", error);
+    logger.error("Failed to start server:", error);
     process.exit(1);
   }
 }
 
 main().catch((error) => {
-  console.error("Server error:", error);
+  logger.error("Server error:", error);
   process.exit(1);
 });

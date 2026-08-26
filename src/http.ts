@@ -8,6 +8,7 @@ import type { OAuthTokenVerifier } from "@modelcontextprotocol/sdk/server/auth/p
 import { createServer } from "./server.js";
 import { ExternalIdpTokenVerifier, StaticTokenVerifier, buildProtectedResourceMetadata } from "./auth.js";
 import { getEnv, parseFresh } from "./shared/env.js";
+import { logger } from "./shared/logger.js";
 
 const MCP_PATH = "/mcp";
 const RESOURCE_METADATA_PATH = "/.well-known/oauth-protected-resource";
@@ -130,7 +131,7 @@ export function buildApp(): Express {
 
   // Four-arg signature is required for Express to treat this as error handling.
   app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
-    console.error("HTTP request failed:", error);
+    logger.error("HTTP request failed:", error);
     if (res.headersSent) return res.end();
     jsonRpcError(res, 500, -32603, "Internal server error");
   });
@@ -166,23 +167,23 @@ export async function startHttpTransport(): Promise<Server> {
   });
 
   const scheme = env.TLS_KEY_FILE && env.TLS_CERT_FILE ? "https" : "http";
-  console.error(
+  logger.info(
     `SendGrid MCP Server running on Streamable HTTP at ${scheme}://${env.MCP_HTTP_HOST}:${env.PORT}${MCP_PATH}`
   );
-  console.error(`Public URL: ${publicOrigin()}${MCP_PATH}`);
+  logger.info(`Public URL: ${publicOrigin()}${MCP_PATH}`);
 
   switch (env.MCP_AUTH_MODE) {
     case "oauth":
-      console.error(`Auth: OAuth 2.1 resource server (issuer ${env.MCP_OAUTH_ISSUER}, resource ${resourceIdentifier()})`);
+      logger.info(`Auth: OAuth 2.1 resource server (issuer ${env.MCP_OAUTH_ISSUER}, resource ${resourceIdentifier()})`);
       if (env.MCP_OAUTH_REQUIRED_SCOPES.length > 0) {
-        console.error(`Required scopes: ${env.MCP_OAUTH_REQUIRED_SCOPES.join(", ")}`);
+        logger.info(`Required scopes: ${env.MCP_OAUTH_REQUIRED_SCOPES.join(", ")}`);
       }
       break;
     case "token":
-      console.error("Auth: static bearer token");
+      logger.info("Auth: static bearer token");
       break;
     case "none":
-      console.error("Auth: DISABLED (loopback only)");
+      logger.info("Auth: DISABLED (loopback only)");
       break;
   }
 
