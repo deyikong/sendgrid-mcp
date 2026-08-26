@@ -37,12 +37,15 @@ test("README's tool count matches the registered tool registry", async () => {
 
 test("RELEASES.md's most recent entry matches package.json's version", () => {
   const releases = readFileSync(resolve(root, "RELEASES.md"), "utf8");
-  const match = releases.match(/^## v(\d+\.\d+\.\d+)/m);
-  assert.ok(match, "RELEASES.md does not contain a '## vX.Y.Z' entry");
+  // release-please writes "## [X.Y.Z](compare-url) (date)"; older, hand-written
+  // entries use "## vX.Y.Z — date". Match whichever heading comes first.
+  const match = releases.match(/^## (?:\[(\d+\.\d+\.\d+)\]|v(\d+\.\d+\.\d+))/m);
+  assert.ok(match, "RELEASES.md does not contain a '## [X.Y.Z]' or '## vX.Y.Z' entry");
+  const found = match[1] ?? match[2];
   assert.equal(
-    match[1],
+    found,
     packageJson.version,
-    `RELEASES.md's newest entry is v${match[1]} but package.json is ${packageJson.version}`
+    `RELEASES.md's newest entry is v${found} but package.json is ${packageJson.version}`
   );
 });
 
