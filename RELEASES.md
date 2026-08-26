@@ -1,5 +1,15 @@
 # Release Notes
 
+## [1.2.1](https://github.com/deyikong/sendgrid-mcp/compare/sendgrid-mcp-v1.2.0...sendgrid-mcp-v1.2.1) (2026-08-26)
+
+
+### Bug Fixes
+
+* correct version extraction in the MCP registry publish workflow ([b64f8db](https://github.com/deyikong/sendgrid-mcp/commit/b64f8dbd2fb5fd670bca1fb614aef7efd567324b))
+* match release-please's changelog heading format in docs test ([a2d49d5](https://github.com/deyikong/sendgrid-mcp/commit/a2d49d52a9d7f724791f7aad60c7e09b5b255104))
+* migrate to zod v4 ([e3e3873](https://github.com/deyikong/sendgrid-mcp/commit/e3e3873f4966b95e70d02649e419d58649a09291))
+* resolve zod's lockfile entry through the public npm registry ([1205e4c](https://github.com/deyikong/sendgrid-mcp/commit/1205e4c270c2e4838ef0bc5048599ae10bc4a5c3))
+
 ## [1.2.0](https://github.com/deyikong/sendgrid-mcp/compare/sendgrid-mcp-v1.1.2...sendgrid-mcp-v1.2.0) (2026-08-26)
 
 
