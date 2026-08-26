@@ -9,13 +9,13 @@
     "id": "1041872815"
   },
   "websiteUrl": "https://github.com/deyikong/sendgrid-mcp#readme",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "sendgrid-mcp",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "transport": {
         "type": "stdio"
       },

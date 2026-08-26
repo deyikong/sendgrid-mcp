@@ -1,6 +1,6 @@
 {
   "name": "sendgrid-mcp",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "mcpName": "io.github.deyikong/sendgrid-mcp",
   "description": "Model Context Protocol (MCP) server for SendGrid API v3 - manage email marketing, automations, templates, and analytics",
   "type": "module",
