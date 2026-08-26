@@ -1502,6 +1502,11 @@ Enable detailed logging by setting the LOG_LEVEL:
 
 This will provide detailed information about API requests and responses.
 
+## Security
+
+Found a vulnerability? Please report it privately rather than opening a
+public issue — see [SECURITY.md](./SECURITY.md).
+
 ## License
 
 This project is licensed under the ISC License.
