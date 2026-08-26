@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       # This workflow and publish.yml both trigger on `release: published` and
       # run in parallel, so npm's CDN may not have finished propagating the
