@@ -3,6 +3,12 @@ name: Publish to MCP Registry
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. 1.2.0). Only needed for manual re-runs; releases fill this in automatically."
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -24,8 +30,20 @@ jobs:
       # published npm package, so wait for it to actually be visible.
       - name: Wait for npm publish to propagate
         run: |
-          VERSION="${{ github.event.release.tag_name }}"
-          VERSION="${VERSION#v}"
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            # release-please's manifest mode tags releases as
+            # "<component>-v<version>" (e.g. sendgrid-mcp-v1.2.0), not a bare
+            # "v1.2.0" -- pull the trailing semver out instead of assuming a
+            # fixed prefix.
+            TAG="${{ github.event.release.tag_name }}"
+            VERSION=$(echo "$TAG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+$')
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "❌ Could not determine a version to wait for (tag: '${{ github.event.release.tag_name }}')"
+            exit 1
+          fi
           for i in $(seq 1 20); do
             PUBLISHED=$(npm view sendgrid-mcp@"$VERSION" version 2>/dev/null || true)
             if [ "$PUBLISHED" = "$VERSION" ]; then
