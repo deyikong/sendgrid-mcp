@@ -7,6 +7,7 @@ export const statsTools = {
     config: {
       title: "Get Global Email Statistics",
       description: "Retrieve global email statistics for your SendGrid account",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
@@ -27,6 +28,7 @@ export const statsTools = {
     config: {
       title: "Get Email Statistics by Browser",
       description: "Retrieve email statistics grouped by browser type. Only clicks and unique_clicks metrics are available.",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
@@ -53,6 +55,7 @@ export const statsTools = {
     config: {
       title: "Get Email Statistics by Client Type",
       description: "Retrieve email statistics grouped by email client type (desktop, mobile, webmail). Only opens and unique_opens metrics are available. This endpoint does not support filtering or pagination.",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
@@ -73,6 +76,7 @@ export const statsTools = {
     config: {
       title: "Get Email Statistics by Device Type",
       description: "Retrieve email statistics grouped by device type (desktop, mobile, tablet). Only opens and unique_opens metrics are available.",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
@@ -97,6 +101,7 @@ export const statsTools = {
     config: {
       title: "Get Email Statistics by Country",
       description: "Retrieve email statistics grouped by country. Only clicks, unique_clicks, opens, and unique_opens metrics are available. Filtering is by country only (no state/province filter exists).",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
@@ -123,6 +128,7 @@ export const statsTools = {
     config: {
       title: "Get Email Statistics by Mailbox Provider",
       description: "Retrieve email statistics grouped by mailbox provider (Gmail, Outlook, Yahoo, etc.). Broadest metric set of all stats breakdowns: blocks, bounces, clicks, deferred, delivered, drops, opens, processed, requests, spam_reports, unique_clicks, unique_opens. Note: no unsubscribes metric.",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),
@@ -149,6 +155,7 @@ export const statsTools = {
     config: {
       title: "Get Email Statistics by Category",
       description: "Retrieve email statistics for specific categories (available for previous 13 months only)",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         categories: z.string().describe("Comma-separated list of categories to retrieve stats for"),
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
@@ -170,6 +177,7 @@ export const statsTools = {
     config: {
       title: "Get Email Statistics by Subuser",
       description: "Retrieve email statistics for specific subusers",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         subusers: z.string().describe("Comma-separated list of subuser names to retrieve stats for"),
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
@@ -191,6 +199,7 @@ export const statsTools = {
     config: {
       title: "Get Statistics Overview",
       description: "Get a comprehensive overview of email statistics across multiple dimensions",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         start_date: z.string().describe("Start date in YYYY-MM-DD format"),
         end_date: z.string().optional().describe("End date in YYYY-MM-DD format (defaults to today)"),

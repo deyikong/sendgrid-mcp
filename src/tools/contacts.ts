@@ -8,6 +8,7 @@ export const contactTools = {
     config: {
       title: "List Email Lists",
       description: "List all email lists",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         page_size: z.number().optional().default(1000).describe("Number of results to return"),
       },
@@ -22,6 +23,7 @@ export const contactTools = {
     config: {
       title: "Create Email List",
       description: "Create a new email list in your SendGrid account",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
       inputSchema: {
         name: z.string().describe("Name of the email list"),
       },
@@ -44,6 +46,7 @@ export const contactTools = {
     config: {
       title: "Update Email List",
       description: "Update the properties of an existing email list",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         list_id: z.string().describe("ID of the email list to update"),
         name: z.string().describe("New name for the email list"),
@@ -67,6 +70,7 @@ export const contactTools = {
     config: {
       title: "Delete Email List",
       description: "Delete an existing email list from your SendGrid account",
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         list_id: z.string().describe("ID of the email list to delete"),
       },
@@ -88,6 +92,7 @@ export const contactTools = {
     config: {
       title: "List Segments",
       description: "List all segments with their parent list relationships",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     handler: async (): Promise<ToolResult> => {
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/segments/2.0");
@@ -99,6 +104,7 @@ export const contactTools = {
     config: {
       title: "Open Segment Creator",
       description: "Open SendGrid segment creator in browser",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     handler: async (): Promise<ToolResult> => {
       return {
@@ -116,6 +122,7 @@ export const contactTools = {
     config: {
       title: "Create Contact",
       description: "Create new contacts in your SendGrid account",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         contacts: z.array(ContactSchema).describe("Array of contact objects"),
       },
@@ -138,6 +145,7 @@ export const contactTools = {
     config: {
       title: "Create Contact with Lists",
       description: "Create new contacts and assign them to specific email lists",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         contacts: z.array(ContactSchema).describe("Array of contact objects"),
         list_ids: z.array(z.string()).describe("Array of list IDs to add the contact to"),
@@ -161,6 +169,7 @@ export const contactTools = {
     config: {
       title: "Open CSV Uploader",
       description: "Open SendGrid CSV contact upload page in browser",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     handler: async (): Promise<ToolResult> => {
       return {
@@ -178,6 +187,7 @@ export const contactTools = {
     config: {
       title: "List Custom Fields",
       description: "List all custom fields",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     handler: async (): Promise<ToolResult> => {
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/field_definitions");
@@ -189,6 +199,7 @@ export const contactTools = {
     config: {
       title: "Create Custom Field",
       description: "Create a new custom field for contacts",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
       inputSchema: {
         name: z.string().describe("Name of the custom field"),
         field_type: z.enum(["Text", "Number", "Date"]).describe("Type of the field"),
@@ -212,6 +223,7 @@ export const contactTools = {
     config: {
       title: "Update Custom Field",
       description: "Update an existing custom field definition",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         field_id: z.string().describe("ID of the custom field to update"),
         name: z.string().describe("New name for the custom field"),
@@ -235,6 +247,7 @@ export const contactTools = {
     config: {
       title: "Delete Custom Field",
       description: "Delete a custom field definition",
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         field_id: z.string().describe("ID of the custom field to delete"),
       },
@@ -256,6 +269,7 @@ export const contactTools = {
     config: {
       title: "List Senders",
       description: "List all verified senders",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     handler: async (): Promise<ToolResult> => {
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/senders");
@@ -267,6 +281,7 @@ export const contactTools = {
     config: {
       title: "Create Sender",
       description: "Create a new sender identity",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
       inputSchema: {
         nickname: z.string().describe("Nickname for the sender"),
         from: z.object({
@@ -309,6 +324,7 @@ export const contactTools = {
     config: {
       title: "Delete Contact",
       description: "Delete contacts by IDs",
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         contact_ids: z.array(z.string()).describe("Array of contact IDs to delete"),
       },
@@ -330,6 +346,7 @@ export const contactTools = {
     config: {
       title: "Remove Contacts from a Specific List",
       description: "Remove contacts from a specific email list",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         list_id: z.string().describe("ID of the list to remove contacts from"),
         contact_ids: z.array(z.string()).describe("Array of contact IDs to remove from the list"),
@@ -352,6 +369,7 @@ export const contactTools = {
     config: {
       title: "Get Contact Details",
       description: "Get detailed information about a specific contact by ID",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         contact_id: z.string().describe("ID of the contact to retrieve"),
       },
@@ -366,6 +384,7 @@ export const contactTools = {
     config: {
       title: "Update Contact",
       description: "Update existing contact information",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         contacts: z.array(
           z.object({
@@ -403,6 +422,7 @@ export const contactTools = {
     config: {
       title: "Search Contacts",
       description: "Search for contacts using query conditions without creating a segment. Only the first 50 matching contacts are returned — this endpoint does not support pagination.",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         query: z.string().describe("Search query using segment conditions (e.g., 'email LIKE \"@example.com\"')"),
       },
@@ -422,6 +442,7 @@ export const contactTools = {
     config: {
       title: "Search Contacts by Email Addresses",
       description: "Search for specific contacts by their email addresses",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         emails: z.array(z.string().email()).describe("Array of email addresses to search for"),
       },
@@ -439,6 +460,7 @@ export const contactTools = {
     config: {
       title: "List All Contacts",
       description: "List up to 50 of your most recently uploaded/updated contacts, sorted by email address. This endpoint takes no parameters — SendGrid deprecated pagination here; use search_contacts or export for anything beyond a quick sample.",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     handler: async (): Promise<ToolResult> => {
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/contacts");
@@ -450,6 +472,7 @@ export const contactTools = {
     config: {
       title: "Delete Sender Identity",
       description: "Delete a verified sender identity",
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         sender_id: z.string().describe("ID of the sender identity to delete"),
       },
@@ -471,6 +494,7 @@ export const contactTools = {
     config: {
       title: "Update Segment",
       description: "Update an existing segment's name or query criteria",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         segment_id: z.string().describe("ID of the segment to update"),
         name: z.string().optional().describe("New name for the segment"),
@@ -509,6 +533,7 @@ export const contactTools = {
     config: {
       title: "Delete Segment",
       description: "Delete an existing segment",
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         segment_id: z.string().describe("ID of the segment to delete"),
       },

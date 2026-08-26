@@ -7,6 +7,7 @@ export const campaignTools = {
     config: {
       title: "List Single Send Campaigns",
       description: "List all single send campaigns",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         page_size: z.number().optional().default(50).describe("Number of results to return"),
         page_token: z.string().optional().describe("Pagination token from a previous response"),
@@ -35,6 +36,7 @@ export const campaignTools = {
     config: {
       title: "Get Single Send Campaign",
       description: "Get detailed content and settings for a single send campaign",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         singlesend_id: z.string().min(1).describe("The single send ID to retrieve"),
       },
@@ -51,6 +53,7 @@ export const campaignTools = {
     config: {
       title: "Open Single Send Creator",
       description: "Open SendGrid single send creator in browser",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     handler: async (): Promise<ToolResult> => {
       return {
@@ -68,6 +71,7 @@ export const campaignTools = {
     config: {
       title: "Open Single Send Stats",
       description: "Open single send stats page for a specific campaign",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         singlesend_id: z.string().describe("The single send ID to view stats for"),
       },

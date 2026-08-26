@@ -8,6 +8,7 @@ export const mailTools = {
     config: {
       title: "Send Mail",
       description: "Send an email using SendGrid Mail Send API",
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
       inputSchema: {
         personalizations: z.array(z.object({
           to: z.array(EmailAddressSchema),

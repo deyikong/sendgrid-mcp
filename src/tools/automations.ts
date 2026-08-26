@@ -8,6 +8,7 @@ export const automationTools = {
     config: {
       title: "List Marketing Automations",
       description: "List all marketing automations",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         offset: PaginationSchema.offset,
         limit: PaginationSchema.limit,
@@ -23,6 +24,7 @@ export const automationTools = {
     config: {
       title: "Get Automation Details",
       description: "Get detailed information about a specific automation including all steps and settings",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         automation_id: z.string().describe("The automation ID to retrieve"),
       },
@@ -37,6 +39,7 @@ export const automationTools = {
     config: {
       title: "Update Automation Settings",
       description: "Update automation-level settings such as name, status, and title. Use this to activate/pause entire automations or rename them.",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         automation_id: z.string().describe("The automation ID to update"),
         title: z.string().optional().describe("New title/name for the automation"),
@@ -97,6 +100,7 @@ export const automationTools = {
     config: {
       title: "Update Automation Step",
       description: "Update individual step settings within an automation, including step status (activate/pause), wait time, and send configurations",
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         automation_id: z.string().describe("The automation ID containing the step"),
         step_id: z.string().describe("The step ID within the automation to update"),
@@ -160,6 +164,7 @@ export const automationTools = {
     config: {
       title: "Delete Automation",
       description: "Permanently delete a marketing automation. This action cannot be undone.",
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         automation_id: z.string().describe("The automation ID to delete"),
       },
@@ -190,6 +195,7 @@ export const automationTools = {
     config: {
       title: "Open Automation Creator",
       description: "Open SendGrid automation creator in browser",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     handler: async (): Promise<ToolResult> => {
       return {
@@ -207,6 +213,7 @@ export const automationTools = {
     config: {
       title: "Open Automation Editor",
       description: "Open automation editor for a specific automation",
+      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
       inputSchema: {
         automation_id: z.string().describe("The automation ID to edit"),
       },
