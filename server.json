@@ -1,0 +1,41 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.deyikong/sendgrid-mcp",
+  "title": "SendGrid MCP Server",
+  "description": "MCP server for SendGrid's v3 API: email marketing, transactional mail, templates, and analytics.",
+  "repository": {
+    "url": "https://github.com/deyikong/sendgrid-mcp",
+    "source": "github",
+    "id": "1041872815"
+  },
+  "websiteUrl": "https://github.com/deyikong/sendgrid-mcp#readme",
+  "version": "1.1.2",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "sendgrid-mcp",
+      "version": "1.1.2",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "npx",
+      "environmentVariables": [
+        {
+          "name": "SENDGRID_API_KEY",
+          "description": "Your SendGrid API key (must start with 'SG.').",
+          "format": "string",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "READ_ONLY",
+          "description": "When true (the default), blocks all write/delete operations at runtime while keeping every tool registered and visible.",
+          "format": "boolean",
+          "isRequired": false,
+          "default": "true"
+        }
+      ]
+    }
+  ]
+}
