@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server that provides comprehensive access to Send
 
 *Built and maintained by a SendGrid engineer, as an independent project — not an official SendGrid product.*
 
-> **v1.1.2 — new:** Fixed four more `contacts` tools (deprecated segments endpoint, wrong HTTP method, fabricated pagination params) found by auditing against SendGrid's public OpenAPI spec. See [RELEASES.md](./RELEASES.md).
+> See [RELEASES.md](./RELEASES.md) for what's changed in the latest release.
 
 ## Features
 

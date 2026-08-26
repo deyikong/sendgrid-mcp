@@ -35,11 +35,15 @@ test("README's tool count matches the registered tool registry", async () => {
   );
 });
 
-test("README claims the same version that package.json ships", () => {
-  const v = packageJson.version;
-  const match = readme.match(/v(\d+\.\d+\.\d+)\s+—\s+new:/);
-  assert.ok(match, "README does not contain a 'v<semver> — new:' release callout");
-  assert.equal(match[1], v, `README callout says v${match[1]} but package.json is ${v}`);
+test("RELEASES.md's most recent entry matches package.json's version", () => {
+  const releases = readFileSync(resolve(root, "RELEASES.md"), "utf8");
+  const match = releases.match(/^## v(\d+\.\d+\.\d+)/m);
+  assert.ok(match, "RELEASES.md does not contain a '## vX.Y.Z' entry");
+  assert.equal(
+    match[1],
+    packageJson.version,
+    `RELEASES.md's newest entry is v${match[1]} but package.json is ${packageJson.version}`
+  );
 });
 
 test("README's RELEASES.md link points at an existing file", () => {
