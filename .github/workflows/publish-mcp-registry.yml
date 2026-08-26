@@ -1,0 +1,49 @@
+name: Publish to MCP Registry
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for OIDC authentication to the MCP registry
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # This workflow and publish.yml both trigger on `release: published` and
+      # run in parallel, so npm's CDN may not have finished propagating the
+      # new version yet. mcp-publisher validates the server against the
+      # published npm package, so wait for it to actually be visible.
+      - name: Wait for npm publish to propagate
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          for i in $(seq 1 20); do
+            PUBLISHED=$(npm view sendgrid-mcp@"$VERSION" version 2>/dev/null || true)
+            if [ "$PUBLISHED" = "$VERSION" ]; then
+              echo "✅ sendgrid-mcp@$VERSION is live on npm"
+              exit 0
+            fi
+            echo "⏳ Waiting for sendgrid-mcp@$VERSION on npm ($i/20)..."
+            sleep 15
+          done
+          echo "❌ Timed out waiting for sendgrid-mcp@$VERSION on npm"
+          exit 1
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server to MCP Registry
+        run: ./mcp-publisher publish
