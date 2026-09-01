@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { makeRequest } from "../shared/api.js";
-import { ToolResult } from "../shared/types.js";
+import { ToolResult, jsonToolResult, PassthroughObjectSchema } from "../shared/types.js";
 
 export const campaignTools = {
   list_single_sends: {
@@ -8,6 +8,7 @@ export const campaignTools = {
       title: "List Single Send Campaigns",
       description: "List all single send campaigns",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         page_size: z.number().optional().default(50).describe("Number of results to return"),
         page_token: z.string().optional().describe("Pagination token from a previous response"),
@@ -28,7 +29,7 @@ export const campaignTools = {
       const result = await makeRequest(
         `https://api.sendgrid.com/v3/marketing/singlesends?${searchParams.toString()}`,
       );
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -37,6 +38,7 @@ export const campaignTools = {
       title: "Get Single Send Campaign",
       description: "Get detailed content and settings for a single send campaign",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         singlesend_id: z.string().min(1).describe("The single send ID to retrieve"),
       },
@@ -45,7 +47,7 @@ export const campaignTools = {
       const result = await makeRequest(
         `https://api.sendgrid.com/v3/marketing/singlesends/${encodeURIComponent(singlesend_id)}`,
       );
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 

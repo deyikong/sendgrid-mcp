@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { makeRequest } from "../shared/api.js";
-import { ContactSchema, ToolResult } from "../shared/types.js";
+import { ContactSchema, ToolResult, jsonToolResult, PassthroughObjectSchema } from "../shared/types.js";
 import { checkReadOnlyMode } from "../shared/env.js";
 
 export const contactTools = {
@@ -9,13 +9,14 @@ export const contactTools = {
       title: "List Email Lists",
       description: "List all email lists",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         page_size: z.number().optional().default(1000).describe("Number of results to return"),
       },
     },
     handler: async ({ page_size }: { page_size: number }): Promise<ToolResult> => {
       const result = await makeRequest(`https://api.sendgrid.com/v3/marketing/lists?page_size=${page_size}`);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -24,6 +25,7 @@ export const contactTools = {
       title: "Create Email List",
       description: "Create a new email list in your SendGrid account",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         name: z.string().describe("Name of the email list"),
       },
@@ -38,7 +40,7 @@ export const contactTools = {
         method: "POST",
         body: JSON.stringify({ name }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -47,6 +49,7 @@ export const contactTools = {
       title: "Update Email List",
       description: "Update the properties of an existing email list",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         list_id: z.string().describe("ID of the email list to update"),
         name: z.string().describe("New name for the email list"),
@@ -62,7 +65,7 @@ export const contactTools = {
         method: "PATCH",
         body: JSON.stringify({ name }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -93,10 +96,11 @@ export const contactTools = {
       title: "List Segments",
       description: "List all segments with their parent list relationships",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
     },
     handler: async (): Promise<ToolResult> => {
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/segments/2.0");
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -123,6 +127,7 @@ export const contactTools = {
       title: "Create Contact",
       description: "Create new contacts in your SendGrid account",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         contacts: z.array(ContactSchema).describe("Array of contact objects"),
       },
@@ -137,7 +142,7 @@ export const contactTools = {
         method: "PUT",
         body: JSON.stringify({ contacts }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -146,6 +151,7 @@ export const contactTools = {
       title: "Create Contact with Lists",
       description: "Create new contacts and assign them to specific email lists",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         contacts: z.array(ContactSchema).describe("Array of contact objects"),
         list_ids: z.array(z.string()).describe("Array of list IDs to add the contact to"),
@@ -161,7 +167,7 @@ export const contactTools = {
         method: "PUT",
         body: JSON.stringify({ contacts, list_ids }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -188,10 +194,11 @@ export const contactTools = {
       title: "List Custom Fields",
       description: "List all custom fields",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
     },
     handler: async (): Promise<ToolResult> => {
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/field_definitions");
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -200,6 +207,7 @@ export const contactTools = {
       title: "Create Custom Field",
       description: "Create a new custom field for contacts",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         name: z.string().describe("Name of the custom field"),
         field_type: z.enum(["Text", "Number", "Date"]).describe("Type of the field"),
@@ -215,7 +223,7 @@ export const contactTools = {
         method: "POST",
         body: JSON.stringify({ name, field_type }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -224,6 +232,7 @@ export const contactTools = {
       title: "Update Custom Field",
       description: "Update an existing custom field definition",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         field_id: z.string().describe("ID of the custom field to update"),
         name: z.string().describe("New name for the custom field"),
@@ -239,7 +248,7 @@ export const contactTools = {
         method: "PATCH",
         body: JSON.stringify({ name }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -270,10 +279,11 @@ export const contactTools = {
       title: "List Senders",
       description: "List all verified senders",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
     },
     handler: async (): Promise<ToolResult> => {
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/senders");
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -347,6 +357,7 @@ export const contactTools = {
       title: "Remove Contacts from a Specific List",
       description: "Remove contacts from a specific email list",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         list_id: z.string().describe("ID of the list to remove contacts from"),
         contact_ids: z.array(z.string()).describe("Array of contact IDs to remove from the list"),
@@ -361,7 +372,7 @@ export const contactTools = {
       const result = await makeRequest(`https://api.sendgrid.com/v3/marketing/lists/${list_id}/contacts?contact_ids=${contact_ids.join(',')}`, {
         method: "DELETE",
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -370,13 +381,14 @@ export const contactTools = {
       title: "Get Contact Details",
       description: "Get detailed information about a specific contact by ID",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         contact_id: z.string().describe("ID of the contact to retrieve"),
       },
     },
     handler: async ({ contact_id }: { contact_id: string }): Promise<ToolResult> => {
       const result = await makeRequest(`https://api.sendgrid.com/v3/marketing/contacts/${contact_id}`);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -385,6 +397,7 @@ export const contactTools = {
       title: "Update Contact",
       description: "Update existing contact information",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         contacts: z.array(
           z.object({
@@ -414,7 +427,7 @@ export const contactTools = {
         method: "PUT",
         body: JSON.stringify({ contacts }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -423,6 +436,7 @@ export const contactTools = {
       title: "Search Contacts",
       description: "Search for contacts using query conditions without creating a segment. Only the first 50 matching contacts are returned — this endpoint does not support pagination.",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         query: z.string().describe("Search query using segment conditions (e.g., 'email LIKE \"@example.com\"')"),
       },
@@ -434,7 +448,7 @@ export const contactTools = {
         method: "POST",
         body: JSON.stringify(requestBody),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -443,6 +457,7 @@ export const contactTools = {
       title: "Search Contacts by Email Addresses",
       description: "Search for specific contacts by their email addresses",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         emails: z.array(z.string().email()).describe("Array of email addresses to search for"),
       },
@@ -452,7 +467,7 @@ export const contactTools = {
         method: "POST",
         body: JSON.stringify({ emails }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -461,10 +476,11 @@ export const contactTools = {
       title: "List All Contacts",
       description: "List up to 50 of your most recently uploaded/updated contacts, sorted by email address. This endpoint takes no parameters — SendGrid deprecated pagination here; use search_contacts or export for anything beyond a quick sample.",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
     },
     handler: async (): Promise<ToolResult> => {
       const result = await makeRequest("https://api.sendgrid.com/v3/marketing/contacts");
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -495,6 +511,7 @@ export const contactTools = {
       title: "Update Segment",
       description: "Update an existing segment's name or query criteria",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         segment_id: z.string().describe("ID of the segment to update"),
         name: z.string().optional().describe("New name for the segment"),
@@ -525,7 +542,7 @@ export const contactTools = {
         method: "PATCH",
         body: JSON.stringify(updateData),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 

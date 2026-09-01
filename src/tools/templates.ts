@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { makeRequest } from "../shared/api.js";
-import { ToolResult } from "../shared/types.js";
+import { ToolResult, jsonToolResult, PassthroughObjectSchema } from "../shared/types.js";
 import { checkReadOnlyMode } from "../shared/env.js";
 
 export const templateTools = {
@@ -9,6 +9,7 @@ export const templateTools = {
       title: "List All Templates",
       description: "Retrieve all transactional templates (legacy and dynamic)",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         generations: z.string().optional().describe("Filter by template generation (legacy or dynamic)"),
         page_size: z.number().optional().default(50).describe("Number of templates to return (max 200)"),
@@ -19,7 +20,7 @@ export const templateTools = {
       if (generations) url += `&generations=${generations}`;
       
       const result = await makeRequest(url);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -28,13 +29,14 @@ export const templateTools = {
       title: "Get Template Details",
       description: "Retrieve details of a specific template including all versions",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         template_id: z.string().describe("ID of the template to retrieve"),
       },
     },
     handler: async ({ template_id }: { template_id: string }): Promise<ToolResult> => {
       const result = await makeRequest(`https://api.sendgrid.com/v3/templates/${template_id}`);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -43,6 +45,7 @@ export const templateTools = {
       title: "Create New Template",
       description: "Create a new dynamic transactional template",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         name: z.string().describe("Name of the template"),
         generation: z.enum(["legacy", "dynamic"]).optional().default("dynamic").describe("Template generation type"),
@@ -61,7 +64,7 @@ export const templateTools = {
           generation: generation || "dynamic"
         }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -70,6 +73,7 @@ export const templateTools = {
       title: "Update Template",
       description: "Update the name of an existing template",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         template_id: z.string().describe("ID of the template to update"),
         name: z.string().describe("New name for the template"),
@@ -85,7 +89,7 @@ export const templateTools = {
         method: "PATCH",
         body: JSON.stringify({ name }),
       });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -190,6 +194,7 @@ export const templateTools = {
       title: "Get Template Version",
       description: "Retrieve details of a specific template version",
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         template_id: z.string().describe("ID of the template"),
         version_id: z.string().describe("ID of the version to retrieve"),
@@ -197,7 +202,7 @@ export const templateTools = {
     },
     handler: async ({ template_id, version_id }: { template_id: string; version_id: string }): Promise<ToolResult> => {
       const result = await makeRequest(`https://api.sendgrid.com/v3/templates/${template_id}/versions/${version_id}`);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
@@ -206,6 +211,7 @@ export const templateTools = {
       title: "Update Template Version",
       description: "Update the content and settings of a template version",
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      outputSchema: PassthroughObjectSchema,
       inputSchema: {
         template_id: z.string().describe("ID of the template"),
         version_id: z.string().describe("ID of the version to update"),
@@ -270,7 +276,7 @@ export const templateTools = {
         body: JSON.stringify(versionData),
       });
       
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      return jsonToolResult(result);
     },
   },
 
