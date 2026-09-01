@@ -1,4 +1,22 @@
 import { z } from "zod";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+// Reads the package's own version from its package.json, so the MCP
+// handshake's serverInfo.version can't drift from what's actually published
+// (this used to be a hardcoded "1.0.0" that never got updated). The relative
+// path holds both when running from source (build/shared/env.js -> ../../)
+// and when installed as a dependency, since the layout is the same.
+function getPackageVersion(): string {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const pkg = JSON.parse(readFileSync(join(here, "../../package.json"), "utf8"));
+    return typeof pkg.version === "string" ? pkg.version : "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+}
 
 // Environment variable schema
 const EnvSchema = z.object({
@@ -6,9 +24,9 @@ const EnvSchema = z.object({
     .string()
     .min(1, "SENDGRID_API_KEY is required")
     .startsWith("SG.", "SENDGRID_API_KEY must start with 'SG.'"),
-  
+
   MCP_SERVER_NAME: z.string().optional().default("sendgrid-mcp"),
-  MCP_SERVER_VERSION: z.string().optional().default("1.0.0"),
+  MCP_SERVER_VERSION: z.string().optional().default(getPackageVersion()),
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).optional().default("info"),
   REQUEST_TIMEOUT: z
     .string()

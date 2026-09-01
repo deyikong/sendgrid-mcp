@@ -172,3 +172,13 @@ test("SENDGRID_API_KEY must start with 'SG.'", async () => {
     SENDGRID_API_KEY: "AKIA-not-a-sendgrid-key",
   });
 });
+
+test("MCP_SERVER_VERSION defaults to package.json's actual version, not a stale hardcoded string", async () => {
+  const { readFileSync } = await import("node:fs");
+  const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+
+  await withEnv({}, async ({ validateEnvironment, getEnv }) => {
+    validateEnvironment();
+    assert.equal(getEnv().MCP_SERVER_VERSION, pkg.version);
+  });
+});
