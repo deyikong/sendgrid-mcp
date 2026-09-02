@@ -9,6 +9,10 @@ build/
 dist/
 *.tsbuildinfo
 
+# MCPB bundle build artifacts (npm run build:mcpb)
+mcpb-stage/
+*.mcpb
+
 # Environment variables
 .env
 .env.local

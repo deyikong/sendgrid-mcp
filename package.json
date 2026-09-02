@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
+    "build:mcpb": "node scripts/build-mcpb.mjs",
     "test": "npm run build && node --test tests/*.test.mjs"
   },
   "keywords": [
@@ -49,6 +50,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@anthropic-ai/mcpb": "^2.1.2",
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2"
