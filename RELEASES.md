@@ -1,5 +1,19 @@
 # Release Notes
 
+## [1.3.0](https://github.com/deyikong/sendgrid-mcp/compare/sendgrid-mcp-v1.2.1...sendgrid-mcp-v1.3.0) (2026-09-03)
+
+
+### Features
+
+* add MCP structuredContent/outputSchema to object-returning tools ([4506742](https://github.com/deyikong/sendgrid-mcp/commit/450674240396f7eb8e2274f4e8953866611c738a))
+* add MCPB bundle build for Smithery/Claude Desktop distribution ([969fa8e](https://github.com/deyikong/sendgrid-mcp/commit/969fa8e93a0fde923a4b2516722a2f88769ff972))
+
+
+### Bug Fixes
+
+* read MCP_SERVER_VERSION from package.json instead of a hardcoded default ([7c8b6e2](https://github.com/deyikong/sendgrid-mcp/commit/7c8b6e20059b2b563476d1a5014d0ce07242c7d4))
+* resolve @anthropic-ai/mcpb's dependency tree through the public npm registry ([5687436](https://github.com/deyikong/sendgrid-mcp/commit/5687436d7b9e5421b005702ba59fb0367b50e9cd))
+
 ## [1.2.1](https://github.com/deyikong/sendgrid-mcp/compare/sendgrid-mcp-v1.2.0...sendgrid-mcp-v1.2.1) (2026-08-26)
 
 
