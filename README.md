@@ -1,6 +1,7 @@
 # SendGrid MCP Server
 
 [![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/deyikong/sendgrid-mcp)
+[![smithery badge](https://smithery.ai/badge/deyikong/sendgrid-mcp)](https://smithery.ai/servers/deyikong/sendgrid-mcp)
 
 A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 58 tools covering all aspects of email management and performance analysis.
 

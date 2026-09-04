@@ -16,6 +16,7 @@
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
     "build:mcpb": "node scripts/build-mcpb.mjs",
+    "build:mcpb:smithery": "node scripts/build-mcpb-smithery.mjs",
     "test": "npm run build && node --test tests/*.test.mjs"
   },
   "keywords": [

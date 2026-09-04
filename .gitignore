@@ -9,8 +9,9 @@ build/
 dist/
 *.tsbuildinfo
 
-# MCPB bundle build artifacts (npm run build:mcpb)
+# MCPB bundle build artifacts (npm run build:mcpb / build:mcpb:smithery)
 mcpb-stage/
+mcpb-stage-smithery/
 *.mcpb
 
 # Environment variables
