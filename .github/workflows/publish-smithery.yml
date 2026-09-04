@@ -1,0 +1,38 @@
+name: Publish to Smithery
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Produces sendgrid-mcp-smithery.mcpb: the same bundle as `npm run
+      # build:mcpb`, but with a real inputSchema per tool -- Smithery's
+      # registry requires it, but the official MCPB manifest schema forbids
+      # it on the canonical bundle. See scripts/build-mcpb-smithery.mjs.
+      - name: Build Smithery MCPB bundle
+        run: npm run build:mcpb:smithery
+
+      - name: Publish to Smithery
+        env:
+          SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
+        run: npx -y @smithery/cli mcp publish ./sendgrid-mcp-smithery.mcpb -n deyikong/sendgrid-mcp
