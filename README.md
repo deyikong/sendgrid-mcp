@@ -3,7 +3,7 @@
 [![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/deyikong/sendgrid-mcp)
 [![smithery badge](https://smithery.ai/badge/deyikong/sendgrid-mcp)](https://smithery.ai/servers/deyikong/sendgrid-mcp)
 
-A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 58 tools covering all aspects of email management and performance analysis.
+A Model Context Protocol (MCP) server that provides comprehensive access to SendGrid's API v3 for email marketing, transactional email operations, dynamic template management, and detailed analytics. Features 154 tools covering all aspects of email management and performance analysis.
 
 *Built and maintained by a SendGrid engineer, as an independent project — not an official SendGrid product.*
 
@@ -698,7 +698,7 @@ This will allow all mutating operations to execute normally while maintaining al
 
 ## Available Tools
 
-The server exposes 58 tools grouped into 10 categories. Every tool is registered regardless of `READ_ONLY` mode — see [Read-Only Mode](#read-only-mode) for which ones are blocked by default.
+The server exposes 154 tools grouped into 22 categories. Every tool is registered regardless of `READ_ONLY` mode — see [Read-Only Mode](#read-only-mode) for which ones are blocked by default.
 
 📚 **For natural-language prompts you can say directly to Claude, see [EXAMPLE_PROMPTS.md](EXAMPLE_PROMPTS.md).** The examples below show the underlying JSON tool calls.
 
@@ -716,7 +716,21 @@ The server exposes 58 tools grouped into 10 categories. Every tool is registered
 | [Mail Sending](#mail-sending) | 1 | 0 | 1 |
 | [Email Statistics & Analytics](#email-statistics--analytics) | 9 | 9 | 0 |
 | [Utilities](#utilities) | 1 | 1 | 0 |
-| **Total** | **58** | **32** | **26** |
+| [Suppressions](#suppressions) | 21 | 10 | 11 |
+| [Domain Authentication & Link Branding](#domain-authentication--link-branding) | 13 | 5 | 8 |
+| [Event & Inbound Parse Webhooks](#event--inbound-parse-webhooks) | 12 | 5 | 7 |
+| [Tracking Settings](#tracking-settings) | 9 | 5 | 4 |
+| [Mail Settings](#mail-settings) | 11 | 6 | 5 |
+| [API Keys (read-only)](#api-keys-read-only) | 2 | 2 | 0 |
+| [Alerts (read-only)](#alerts-read-only) | 2 | 2 | 0 |
+| [Teammates (read-only)](#teammates-read-only) | 3 | 3 | 0 |
+| [Dedicated IPs (read-only)](#dedicated-ips-read-only) | 11 | 11 | 0 |
+| [Design Library](#design-library) | 9 | 4 | 5 |
+| [Email Address Validation](#email-address-validation) | 1 | 0 | 1 |
+| [Message Search](#message-search) | 2 | 2 | 0 |
+| **Total** | **154** | **87** | **67** |
+
+API Keys, Alerts, Teammates, and Dedicated IPs are deliberately read-only in this server, and SSO/certificate management isn't exposed at all — see [Intentionally Unsupported Operations](#intentionally-unsupported-operations) for why.
 
 ### Marketing Automations
 
@@ -1231,6 +1245,138 @@ Tracks delivery, open, and click-through rates; bounce rates (hard/soft), spam r
 
 - `get_scopes` - Get available API permission scopes (no arguments)
 
+### Suppressions
+
+- `list_suppression_groups` - List all unsubscribe (suppression) groups on the account
+- `create_suppression_group` - Create a new unsubscribe (suppression) group
+- `get_suppression_group` - Get details about a specific unsubscribe (suppression) group
+- `update_suppression_group` - Update the name, description, or default status of an existing suppression group
+- `delete_suppression_group` - Permanently delete an unsubscribe (suppression) group. This action cannot be undone.
+- `list_group_suppressions` - List all email addresses that are unsubscribed from a specific suppression group
+- `add_group_suppressions` - Add one or more email addresses to a specific suppression group's unsubscribe list
+- `remove_group_suppression` - Remove a single email address from a specific suppression group's unsubscribe list. This only re-permits mail assigned to this group's category -- it is not a global resubscribe.
+- `list_global_suppressions` - List email addresses on the account-wide global unsubscribe list, optionally filtered by a time range
+- `add_global_suppression` - Add recipients to the account-wide global unsubscribe list -- they will stop receiving all non-transactional mail from this account
+- `get_global_suppression` - Check whether a specific email address is on the account-wide global unsubscribe list
+- `delete_global_suppression` - Remove an email address from the account-wide global suppression list, effectively resubscribing them to non-transactional mail
+- `list_bounces` - List all email addresses that have bounced, optionally filtered by a time range
+- `get_bounce` - Get bounce event(s) recorded for a specific email address
+- `delete_bounce` - Remove a bounce record for an email address so this address can receive mail again
+- `list_blocks` - List all email addresses currently on the blocks list, optionally filtered by a time range
+- `delete_block` - Remove an email address from the blocks list so this address can receive mail again
+- `list_spam_reports` - List all email addresses that have reported mail as spam, optionally filtered by a time range
+- `delete_spam_report` - Remove an email address from the spam reports list so this address can receive mail again
+- `list_invalid_emails` - List all email addresses that have been marked invalid, optionally filtered by a time range
+- `delete_invalid_email` - Remove an email address from the invalid emails list so this address can receive mail again
+
+### Domain Authentication & Link Branding
+
+- `list_authenticated_domains` - List all authenticated (whitelabel) domains configured for sending mail
+- `get_authenticated_domain` - Get detailed information about a specific authenticated domain, including its DNS records
+- `create_authenticated_domain` - Set up domain authentication (SPF/DKIM) for sending mail from a custom domain
+- `update_authenticated_domain` - Update the custom SPF or default settings of an existing authenticated domain
+- `delete_authenticated_domain` - Permanently delete an authenticated domain. This action cannot be undone.
+- `validate_authenticated_domain` - Check whether the domain's DNS records are correctly configured for authentication
+- `get_default_authenticated_domain` - Get the authenticated domain currently set as the default for sending mail
+- `list_branded_links` - List all branded links (link whitelabels) configured for click tracking
+- `get_branded_link` - Get detailed information about a specific branded link, including its DNS records
+- `create_branded_link` - Set up branded link tracking (click tracking through the sender's own domain instead of sendgrid.net)
+- `update_branded_link` - Update the default setting of an existing branded link
+- `delete_branded_link` - Permanently delete a branded link. This action cannot be undone.
+- `validate_branded_link` - Check whether the branded link's DNS records are correctly configured
+
+### Event & Inbound Parse Webhooks
+
+- `list_event_webhooks` - List all configured Event Webhook settings on the account
+- `get_event_webhook` - Get the configuration of a specific Event Webhook by ID
+- `create_event_webhook` - Creates a new Event Webhook that POSTs email events (delivered, bounced, opened, clicked, etc.) to the given URL
+- `update_event_webhook` - Update the configuration of an existing Event Webhook
+- `delete_event_webhook` - Permanently delete an Event Webhook configuration. This action cannot be undone.
+- `test_event_webhook` - Sends a test event payload to the given webhook URL to verify it's reachable and correctly configured
+- `list_inbound_parse_settings` - List all configured Inbound Parse webhook settings on the account
+- `get_inbound_parse_setting` - Get the Inbound Parse webhook configuration for a specific hostname
+- `create_inbound_parse_setting` - Configures inbound email parsing so mail sent to the given hostname is POSTed to the given URL
+- `update_inbound_parse_setting` - Update the Inbound Parse webhook configuration for a specific hostname
+- `delete_inbound_parse_setting` - Permanently delete an Inbound Parse webhook configuration for a hostname. This action cannot be undone.
+- `get_inbound_parse_stats` - Get statistics on the number of inbound emails parsed over a given date range
+
+### Tracking Settings
+
+- `get_tracking_settings` - Retrieve all tracking settings (click, open, subscription, Google Analytics) in one call
+- `get_click_tracking_settings` - Retrieve the current click tracking setting
+- `update_click_tracking_settings` - Enable or disable click tracking on links within emails
+- `get_google_analytics_settings` - Retrieve the current Google Analytics tracking settings
+- `update_google_analytics_settings` - Update Google Analytics tracking settings, including UTM campaign, content, medium, source, and term values
+- `get_open_tracking_settings` - Retrieve the current open tracking setting
+- `update_open_tracking_settings` - Enable or disable open tracking, which inserts an invisible pixel to record when an email is opened
+- `get_subscription_tracking_settings` - Retrieve the current subscription tracking settings
+- `update_subscription_tracking_settings` - Update subscription tracking settings, including the unsubscribe link content, landing page, URL, and replacement tag
+
+### Mail Settings
+
+- `get_all_mail_settings` - Retrieve all mail settings (address whitelist, bounce purge, footer, forward bounce, forward spam, etc.) in one call
+- `get_address_whitelist_settings` - Retrieve the current address whitelist mail setting, which controls which email addresses or domains bypass all suppression lists
+- `update_address_whitelist_settings` - Update the address whitelist setting that controls which email addresses or domains bypass all suppression lists
+- `get_bounce_purge_settings` - Retrieve the current bounce purge mail setting, which automatically purges old bounce records after a configured number of days
+- `update_bounce_purge_settings` - Update the bounce purge setting that automatically purges old bounce records after a configured number of days
+- `get_footer_settings` - Retrieve the current footer mail setting, which appends a footer to every outgoing email
+- `update_footer_settings` - Update the footer setting that appends a footer to every outgoing email
+- `get_forward_bounce_settings` - Retrieve the current forward bounce mail setting, which forwards bounce notifications to a given email address
+- `update_forward_bounce_settings` - Update the forward bounce setting that forwards bounce notifications to a given email address
+- `get_forward_spam_settings` - Retrieve the current forward spam mail setting, which forwards spam report notifications to a given email address
+- `update_forward_spam_settings` - Update the forward spam setting that forwards spam report notifications to a given email address
+
+### API Keys (read-only)
+
+- `list_api_keys` - List all API keys on the account (names and IDs only, not the secret key values)
+- `get_api_key` - Get details for a specific API key, including its scopes
+
+### Alerts (read-only)
+
+- `list_alerts` - List all usage/stats alerts configured on the account
+- `get_alert` - Get details for a specific alert
+
+### Teammates (read-only)
+
+- `list_teammates` - List all teammates (users) on the account
+- `get_teammate` - Get details for a specific teammate, including their permission scopes
+- `list_pending_teammates` - List pending teammate invitations that haven't been accepted yet
+
+### Dedicated IPs (read-only)
+
+- `list_ip_addresses` - List all IP addresses assigned to the account
+- `get_ip_address` - Get details for a specific IP address, including its warmup status and assigned subusers
+- `list_assigned_ips` - List all IP addresses that are currently assigned to a subuser
+- `list_ip_pools` - List all IP pools on the account
+- `get_ip_pool` - Get details for a specific IP pool, including the IP addresses it contains
+- `get_remaining_ips` - Get the count and cost of additional dedicated IP addresses available for purchase
+- `list_ip_warmups` - List all IP addresses currently in the warmup process
+- `get_ip_warmup_status` - Get the warmup status for a specific IP address
+- `list_allowed_ips` - List IP addresses allowed to access the account via the API/UI (the access allowlist)
+- `get_allowed_ip` - Get details for a specific entry in the access allowlist
+- `list_access_activity` - List recent account access attempts (successful and blocked logins/API calls)
+
+### Design Library
+
+- `list_designs` - List all custom email designs in the Design Library
+- `create_design` - Create a new custom email design in the Design Library from raw HTML
+- `get_design` - Get details for a specific design in the Design Library
+- `update_design` - Update the content or metadata of an existing design in the Design Library
+- `delete_design` - Permanently delete a custom design from the Design Library. This action cannot be undone.
+- `duplicate_design` - Create a copy of an existing design in the Design Library
+- `list_prebuilt_designs` - List SendGrid's built-in pre-made design templates
+- `get_prebuilt_design` - Get details for one of SendGrid's built-in pre-made designs
+- `duplicate_prebuilt_design` - Create an editable copy of one of SendGrid's built-in pre-made designs
+
+### Email Address Validation
+
+- `validate_email` - Check whether an email address is valid and likely to be deliverable, using SendGrid's Email Address Validation API (consumes a billed validation credit per call)
+
+### Message Search
+
+- `search_email_activity` - Search sent message activity using SendGrid's SGQL filter syntax (e.g. by recipient, status, or subject) -- useful for troubleshooting why a specific email wasn't delivered
+- `get_message_details` - Get full delivery event history and details for a single sent message by its message ID
+
 ## Available Resources
 
 - `sendgrid://automations` - Marketing automations data
@@ -1509,6 +1655,17 @@ This will provide detailed information about API requests and responses.
 
 Found a vulnerability? Please report it privately rather than opening a
 public issue — see [SECURITY.md](./SECURITY.md).
+
+### Intentionally Unsupported Operations
+
+A handful of SendGrid API capabilities are deliberately left out of this server, on top of whatever `READ_ONLY` mode blocks at runtime. These aren't gaps to be filled later — they're excluded because letting an LLM call them autonomously carries account-wide blast radius that a `READ_ONLY` toggle alone doesn't mitigate (an operator running with `READ_ONLY=false` for legitimate marketing-automation writes shouldn't also be one prompt-injected tool call away from losing account access or api budget):
+
+- **API key creation/rotation/deletion** — only `list_api_keys`/`get_api_key` are exposed. Minting or deleting API keys is a classic prompt-injection target: a malicious webpage or email an agent processes could try to trick it into creating a new key and exfiltrating it.
+- **Teammate invites, permission changes, and removal** — only `list_teammates`/`get_teammate`/`list_pending_teammates` are exposed. Adding, removing, or re-permissioning teammates is account access control with the same injection risk as API keys.
+- **Dedicated IP purchases, warmup control, and access-allowlist changes** — only read/list tools are exposed. Dedicated IPs cost real money and affect deliverability infrastructure account-wide; access-allowlist mistakes can lock out legitimate API access entirely.
+- **SSO and certificate management** — not exposed at all, in any form. Misconfiguring SSO can lock an entire organization out of login, and there's essentially no legitimate reason for a chat assistant to be managing it.
+
+If you need any of these for a specific automation, use the SendGrid dashboard or API directly rather than requesting this server add them — that's a deliberate design boundary, not an oversight.
 
 ## License
 

@@ -58,7 +58,7 @@ Real client — MCP Inspector (visual):
 ```bash
 npx @modelcontextprotocol/inspector
 # In the UI: Transport = Streamable HTTP, URL = http://127.0.0.1:3000/mcp
-# Header: Authorization: Bearer <token>  -> Connect -> "List Tools" (expect 58)
+# Header: Authorization: Bearer <token>  -> Connect -> "List Tools" (expect 154)
 ```
 
 ## 2. HTTP + no auth (loopback dev)
