@@ -1,5 +1,12 @@
 # Release Notes
 
+## [1.4.0](https://github.com/deyikong/sendgrid-mcp/compare/sendgrid-mcp-v1.3.0...sendgrid-mcp-v1.4.0) (2026-09-04)
+
+
+### Features
+
+* add 96 new tools across 12 categories (58 -&gt; 154) ([ba7428d](https://github.com/deyikong/sendgrid-mcp/commit/ba7428d652475cba5ebbe64165d078a9882cf4e1))
+
 ## [1.3.0](https://github.com/deyikong/sendgrid-mcp/compare/sendgrid-mcp-v1.2.1...sendgrid-mcp-v1.3.0) (2026-09-03)
 
 
